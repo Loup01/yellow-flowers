@@ -18,6 +18,10 @@
     var TREE_FINAL_X = 500;
     var TREE_SCALE = config.tree.transition.targetScale;
     var TREE_OFFSET_X = TREE_FINAL_X - TREE_CAPTURE_X * TREE_SCALE;
+    var TREE_OFFSET_Y = height * (1 - TREE_SCALE);
+    var branchOnlyImage = null;
+    var growthLensCanvas = null;
+    var growthLensContext = null;
 
     function sleep(ms) {
         return new Promise(function (resolve) {
@@ -143,7 +147,27 @@
     var tree = new Tree(canvas, width, height, opts);
     var seed = tree.seed;
     var foot = tree.footer;
-    var startInteraction = TreeInteractions.bindStartInteraction(canvas, seed);
+    var openingInvitation = document.getElementById("opening-invitation");
+    var openingName = document.getElementById("opening-name");
+    var growthLens = document.getElementById("growth-lens");
+    var growthLensRing = document.getElementById("growth-lens-ring");
+
+    function dismissOpening() {
+        if (openingInvitation) {
+            openingInvitation.classList.add("is-dismissed");
+            openingInvitation.setAttribute("aria-hidden", "true");
+            openingInvitation.tabIndex = -1;
+        }
+    }
+
+    if (openingName) {
+        openingName.textContent = config.recipientDisplay;
+    }
+
+    var startInteraction = TreeInteractions.bindStartInteraction(canvas, seed, dismissOpening);
+    if (openingInvitation) {
+        openingInvitation.addEventListener("click", startInteraction.start);
+    }
     if (new URLSearchParams(window.location.search).get("preview") === "1") {
         startInteraction.start();
     }
@@ -185,6 +209,7 @@
             tree.grow();
             await wait(10);
         } while (tree.canGrow());
+        branchOnlyImage = tree.toDataURL('image/png');
     }
 
     async function flowAnimate() {
@@ -217,6 +242,42 @@
                 resolve();
             };
             image.src = finalImage;
+        });
+
+        if (growthLens && branchOnlyImage) {
+            var lensImage = await buildGrowthLensImage(branchOnlyImage);
+            growthLens.style.backgroundImage = "url(" + lensImage + ")";
+        }
+    }
+
+    function buildGrowthLensImage(source) {
+        return new Promise(function (resolve) {
+            var image = new Image();
+            image.onload = function () {
+                growthLensCanvas = document.createElement("canvas");
+                growthLensCanvas.width = width;
+                growthLensCanvas.height = height;
+                growthLensContext = growthLensCanvas.getContext("2d");
+                var context = growthLensContext;
+                context.fillStyle = "#f3e8d0";
+                context.fillRect(0, 0, width, height);
+                if (groundLayer) {
+                    context.drawImage(groundLayer, 0, 0, width, height);
+                }
+                context.drawImage(
+                    image,
+                    TREE_CAPTURE_X,
+                    0,
+                    610,
+                    height,
+                    TREE_FINAL_X,
+                    TREE_OFFSET_Y,
+                    610 * TREE_SCALE,
+                    height * TREE_SCALE
+                );
+                resolve(growthLensCanvas.toDataURL("image/png"));
+            };
+            image.src = source;
         });
     }
 
@@ -263,11 +324,11 @@
 
         return [
             TREE_OFFSET_X + spec[0] * t,
-            spec[1] * t,
+            TREE_OFFSET_Y + spec[1] * t,
             TREE_OFFSET_X + spec[2] * t,
-            spec[3] * t,
+            TREE_OFFSET_Y + spec[3] * t,
             TREE_OFFSET_X + spec[4] * t,
-            spec[5] * t,
+            TREE_OFFSET_Y + spec[5] * t,
             Math.min(4, Math.max(1.8, spec[6] * t * 1.25)),
             Math.max(14, Math.round(spec[7] * t)),
             children
@@ -279,6 +340,7 @@
             return;
         }
 
+        showGrowthLens(spec);
         drawGrowthGuide(spec);
 
         var twig = new Tree(branchLayer, width, height, {
@@ -292,7 +354,47 @@
             await wait(16);
         } while (twig.canGrow());
 
+        updateGrowthLensBranches();
+        await wait(520);
         await flowerTwigTip(spec);
+        await wait(520);
+        hideGrowthLens();
+    }
+
+    function updateGrowthLensBranches() {
+        if (!growthLens || !growthLensCanvas || !growthLensContext || !branchLayer) {
+            return;
+        }
+
+        growthLensContext.drawImage(branchLayer, 0, 0, width, height);
+        growthLens.style.backgroundImage = "url(" + growthLensCanvas.toDataURL("image/png") + ")";
+    }
+
+    function showGrowthLens(spec) {
+        var centerX = (spec[0] + spec[4]) / 2;
+        var centerY = (spec[1] + spec[5]) / 2;
+        var left = centerX / width * 100;
+        var top = centerY / height * 100;
+
+        if (growthLens) {
+            growthLens.style.setProperty("--lens-x", left + "%");
+            growthLens.style.setProperty("--lens-y", top + "%");
+            growthLens.classList.add("is-visible");
+        }
+        if (growthLensRing) {
+            growthLensRing.style.left = left + "%";
+            growthLensRing.style.top = top + "%";
+            growthLensRing.classList.add("is-visible");
+        }
+    }
+
+    function hideGrowthLens() {
+        if (growthLens) {
+            growthLens.classList.remove("is-visible");
+        }
+        if (growthLensRing) {
+            growthLensRing.classList.remove("is-visible");
+        }
     }
 
     function drawGrowthGuide(spec) {

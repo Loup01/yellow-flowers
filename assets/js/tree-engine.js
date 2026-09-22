@@ -79,7 +79,7 @@
             scale  : scale,
             color  : color,
             figure : new Heart(),
-            label  : label || '  Flores Para Tí',
+            label  : label == null ? '  Flores Para Tí' : label,
         };
 
         this.cirle = {

@@ -100,7 +100,7 @@
             seed: {
                 color: "rgb(139, 69, 19)",
                 scale: 4,
-                    label: recipientName ? ("  Flores para " + recipientName) : "  Flores para ti"
+                label: ""
             },
             branch: [
                 [535, 680, 570, 250, 500, 200, 30, 100, [

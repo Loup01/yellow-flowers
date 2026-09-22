@@ -98,6 +98,66 @@ body::after {
 	pointer-events: none;
 }
 
+.opening-invitation {
+	position: absolute;
+	top: 66%;
+	left: 50%;
+	z-index: 6;
+	display: grid;
+	min-width: 190px;
+	min-height: 72px;
+	place-items: center;
+	border: 0;
+	padding: 9px 22px 10px;
+	transform: translate(-50%, -50%);
+	color: var(--tinta);
+	background: rgba(255, 248, 233, .94);
+	box-shadow: 0 12px 26px rgba(42, 30, 24, .22);
+	font-family: var(--serif);
+	cursor: pointer;
+	transition: opacity .35s ease-out, transform .35s ease-out;
+}
+
+.opening-invitation span {
+	color: var(--granada);
+	font-family: var(--mano);
+	font-size: clamp(17px, 2vw, 24px);
+	line-height: 1;
+}
+
+.opening-invitation strong {
+	max-width: 18ch;
+	overflow: hidden;
+	font-size: clamp(20px, 2.5vw, 31px);
+	font-weight: 500;
+	line-height: 1;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.opening-invitation small {
+	margin-top: 5px;
+	color: #765d46;
+	font-size: 11px;
+	letter-spacing: .04em;
+}
+
+.opening-invitation:hover,
+.opening-invitation:focus-visible {
+	transform: translate(-50%, -52%);
+}
+
+.opening-invitation:focus-visible {
+	outline: 3px solid rgba(242, 140, 24, .52);
+	outline-offset: 4px;
+}
+
+.opening-invitation.is-dismissed {
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-50%, -44%) scale(.96);
+}
+
 #text {
 	position: absolute;
 	top: clamp(18px, 7vh, 76px);
@@ -235,11 +295,52 @@ body::after {
 #branch-layer {
 	position: absolute;
 	inset: 0;
-	z-index: 2;
+	z-index: 3;
 	display: block;
 	width: 100%;
 	height: 100%;
 	pointer-events: none;
+}
+
+.growth-lens {
+	--lens-x: 50%;
+	--lens-y: 50%;
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	clip-path: circle(0 at var(--lens-x) var(--lens-y));
+	opacity: 0;
+	pointer-events: none;
+	transition: clip-path .42s cubic-bezier(.2, .8, .2, 1), opacity .22s ease-out;
+}
+
+.growth-lens.is-visible {
+	clip-path: circle(clamp(62px, 9vw, 104px) at var(--lens-x) var(--lens-y));
+	opacity: 1;
+}
+
+.growth-lens-ring {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	z-index: 4;
+	width: clamp(124px, 18vw, 208px);
+	aspect-ratio: 1;
+	border: 2px solid rgba(242, 140, 24, .78);
+	border-radius: 50%;
+	box-shadow: 0 8px 20px rgba(42, 30, 24, .2), inset 0 0 0 4px rgba(255, 248, 233, .32);
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-50%, -50%) scale(.72);
+	transition: opacity .22s ease-out, transform .42s cubic-bezier(.2, .8, .2, 1);
+}
+
+.growth-lens-ring.is-visible {
+	opacity: 1;
+	transform: translate(-50%, -50%) scale(1);
 }
 
 .growth-sound {
@@ -284,6 +385,9 @@ body::after {
 	#clock-box a { font-size: 18px; }
 	#clock .digit { font-size: 18px; }
 	.branch-touch { font-size: 12px; }
+	.opening-invitation { top: 69%; min-width: 160px; min-height: 62px; padding: 7px 15px 8px; }
+	.growth-lens.is-visible { clip-path: circle(clamp(48px, 15vw, 72px) at var(--lens-x) var(--lens-y)); }
+	.growth-lens-ring { width: clamp(96px, 30vw, 144px); }
 }
 
 @media (max-width: 480px) {
