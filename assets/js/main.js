@@ -279,6 +279,8 @@
             return;
         }
 
+        drawGrowthGuide(spec);
+
         var twig = new Tree(branchLayer, width, height, {
             images: config.flowerImages,
             bloom: { num: 2, width: width, height: height },
@@ -291,6 +293,19 @@
         } while (twig.canGrow());
 
         await flowerTwigTip(spec);
+    }
+
+    function drawGrowthGuide(spec) {
+        layerCtx.save();
+        layerCtx.beginPath();
+        layerCtx.moveTo(spec[0], spec[1]);
+        layerCtx.quadraticCurveTo(spec[2], spec[3], spec[4], spec[5]);
+        layerCtx.setLineDash([3, 4]);
+        layerCtx.strokeStyle = "rgba(139, 69, 19, .28)";
+        layerCtx.lineWidth = Math.max(2.2, spec[6] * 1.25);
+        layerCtx.lineCap = "round";
+        layerCtx.stroke();
+        layerCtx.restore();
     }
 
     function imageReady(image) {
@@ -311,27 +326,68 @@
 
         var placements = [[-5, 1, 20], [6, -4, 17]];
         var seed = Math.abs(Math.round(spec[4] + spec[5]));
+        var flowers = [];
 
         for (var index = 0; index < placements.length; index++) {
             var image = growthFlowerImages[(seed + index * 3) % growthFlowerImages.length];
             var ready = await imageReady(image);
-            if (!ready) {
-                continue;
+            if (ready) {
+                flowers.push({ image: image, placement: placements[index] });
+            }
+        }
+
+        if (!flowers.length) {
+            return;
+        }
+
+        var area = {
+            x: Math.max(0, Math.floor(spec[4] - 34)),
+            y: Math.max(0, Math.floor(spec[5] - 34)),
+            width: Math.min(68, width - Math.max(0, Math.floor(spec[4] - 34))),
+            height: Math.min(68, height - Math.max(0, Math.floor(spec[5] - 34)))
+        };
+        var branchPixels = layerCtx.getImageData(area.x, area.y, area.width, area.height);
+        var stages = reducedMotion ? 1 : 8;
+
+        for (var stage = 0; stage <= stages; stage++) {
+            var progress = stages === 1 ? 1 : stage / stages;
+            var eased = 1 - Math.pow(1 - progress, 3);
+            layerCtx.putImageData(branchPixels, area.x, area.y);
+
+            if (progress < 1) {
+                layerCtx.save();
+                layerCtx.beginPath();
+                layerCtx.arc(spec[4], spec[5], 8 + progress * 17, 0, Math.PI * 2);
+                layerCtx.strokeStyle = "rgba(242, 140, 24, " + (.3 * (1 - progress)) + ")";
+                layerCtx.lineWidth = 2;
+                layerCtx.stroke();
+                layerCtx.restore();
             }
 
-            var placement = placements[index];
-            var size = placement[2];
-            layerCtx.save();
-            layerCtx.globalAlpha = .96;
-            layerCtx.drawImage(
-                image,
-                spec[4] + placement[0] - size / 2,
-                spec[5] + placement[1] - size / 2,
-                size,
-                size
-            );
-            layerCtx.restore();
-            await wait(90);
+            flowers.forEach(function (flower, flowerIndex) {
+                var flowerProgress = flowerIndex === 0
+                    ? eased
+                    : Math.max(0, Math.min(1, (progress - .16) / .84));
+                flowerProgress = 1 - Math.pow(1 - flowerProgress, 3);
+                var placement = flower.placement;
+                var size = placement[2] * flowerProgress;
+                if (size <= 0) {
+                    return;
+                }
+
+                layerCtx.save();
+                layerCtx.globalAlpha = .96;
+                layerCtx.drawImage(
+                    flower.image,
+                    spec[4] + placement[0] - size / 2,
+                    spec[5] + placement[1] - size / 2,
+                    size,
+                    size
+                );
+                layerCtx.restore();
+            });
+
+            await wait(48);
         }
     }
 
@@ -396,6 +452,7 @@
 
     var branchTouch = document.getElementById("branch-touch");
     if (branchTouch) {
+        var branchTouchLabel = branchTouch.textContent;
         branchTouch.addEventListener("click", async function () {
             if (!backdropReady) {
                 return;
@@ -406,6 +463,7 @@
             }
 
             branchTouch.disabled = true;
+            branchTouch.textContent = "(creciendo…)";
             try {
                 var nextSpec = FlowGrowth.specAt(branchCount);
                 twigQueue.push(nextSpec);
@@ -416,6 +474,7 @@
                 await pumpTwigs();
             } finally {
                 branchTouch.disabled = false;
+                branchTouch.textContent = branchTouchLabel;
             }
         });
     }
