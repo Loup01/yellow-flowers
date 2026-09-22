@@ -1,6 +1,7 @@
 (function () {
     var canvas = document.getElementById('canvas');
     var branchLayer = document.getElementById('branch-layer');
+    var flowerLayer = document.getElementById('flower-layer');
     var groundLayer = document.getElementById('ground-layer');
     var config = window.APP_CONFIG;
     var FlowGrowth = window.FlowGrowth;
@@ -197,6 +198,7 @@
     var backdropReady = null;
 
     var layerCtx = branchLayer && branchLayer.getContext ? branchLayer.getContext('2d') : null;
+    var flowerCtx = flowerLayer && flowerLayer.getContext ? flowerLayer.getContext('2d') : null;
     var twigQueue = [];
     var twigPumpRunning = false;
     var growthFlowerImages = config.flowerImages.map(function (source) {
@@ -253,7 +255,6 @@
         wrap.style.backgroundSize = "100% 100%";
         wrap.style.backgroundRepeat = "no-repeat";
         wrap.style.backgroundPosition = "center";
-
         backdropReady = new Promise(function (resolve) {
             var image = new Image();
             image.onload = function () {
@@ -392,7 +393,6 @@
         await sleep(reducedMotion ? 1 : (isNarrowScreen ? 360 : 520));
         await flowerTwigTip(spec);
         await sleep(reducedMotion ? 1 : (isNarrowScreen ? 360 : 520));
-        hideGrowthLens();
     }
 
     function updateGrowthLensBranches() {
@@ -457,7 +457,7 @@
     }
 
     async function flowerTwigTip(spec) {
-        if (!layerCtx || !growthFlowerImages.length) {
+        if (!flowerCtx || !growthFlowerImages.length) {
             return;
         }
 
@@ -488,22 +488,23 @@
             width: Math.min(68, width - Math.max(0, Math.floor(spec[4] - 34))),
             height: Math.min(68, height - Math.max(0, Math.floor(spec[5] - 34)))
         };
-        var branchPixels = layerCtx.getImageData(area.x, area.y, area.width, area.height);
+        var previousFlowers = flowerCtx.getImageData(area.x, area.y, area.width, area.height);
         var stages = reducedMotion ? 1 : 8;
 
         for (var stage = 0; stage <= stages; stage++) {
             var progress = stages === 1 ? 1 : stage / stages;
             var eased = 1 - Math.pow(1 - progress, 3);
-            layerCtx.putImageData(branchPixels, area.x, area.y);
+            flowerCtx.clearRect(area.x, area.y, area.width, area.height);
+            flowerCtx.putImageData(previousFlowers, area.x, area.y);
 
             if (progress < 1) {
-                layerCtx.save();
-                layerCtx.beginPath();
-                layerCtx.arc(spec[4], spec[5], 8 + progress * 17, 0, Math.PI * 2);
-                layerCtx.strokeStyle = "rgba(242, 140, 24, " + (.3 * (1 - progress)) + ")";
-                layerCtx.lineWidth = 2;
-                layerCtx.stroke();
-                layerCtx.restore();
+                flowerCtx.save();
+                flowerCtx.beginPath();
+                flowerCtx.arc(spec[4], spec[5], 8 + progress * 17, 0, Math.PI * 2);
+                flowerCtx.strokeStyle = "rgba(242, 140, 24, " + (.3 * (1 - progress)) + ")";
+                flowerCtx.lineWidth = 2;
+                flowerCtx.stroke();
+                flowerCtx.restore();
             }
 
             flowers.forEach(function (flower, flowerIndex) {
@@ -517,16 +518,16 @@
                     return;
                 }
 
-                layerCtx.save();
-                layerCtx.globalAlpha = .96;
-                layerCtx.drawImage(
+                flowerCtx.save();
+                flowerCtx.globalAlpha = .96;
+                flowerCtx.drawImage(
                     flower.image,
                     spec[4] + placement[0] - size / 2,
                     spec[5] + placement[1] - size / 2,
                     size,
                     size
                 );
-                layerCtx.restore();
+                flowerCtx.restore();
             });
 
             await wait(48);
@@ -553,6 +554,7 @@
         while (twigQueue.length) {
             await growTwigOnLayer(twigSpecOnScreen(twigQueue.shift()));
             await bakeTwig();
+            hideGrowthLens();
         }
         twigPumpRunning = false;
     }

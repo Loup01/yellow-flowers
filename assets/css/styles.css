@@ -103,7 +103,7 @@ body::after {
 	position: absolute;
 	top: 66%;
 	left: 50%;
-	z-index: 6;
+	z-index: 11;
 	display: grid;
 	min-width: 190px;
 	min-height: 72px;
@@ -171,7 +171,7 @@ body::after {
 	position: absolute;
 	top: clamp(18px, 7vh, 76px);
 	left: clamp(18px, 4.8vw, 60px);
-	z-index: 4;
+	z-index: 9;
 	width: min(400px, 40%);
 }
 
@@ -246,7 +246,7 @@ body::after {
 	position: absolute;
 	bottom: clamp(12px, 2.5vh, 28px);
 	left: clamp(18px, 4.8vw, 60px);
-	z-index: 4;
+	z-index: 9;
 	max-width: min(400px, 40%);
 	padding: 9px 14px 11px;
 	border: 1px solid rgba(245, 184, 46, .32);
@@ -285,7 +285,7 @@ body::after {
 
 #canvas {
 	position: relative;
-	z-index: 1;
+	z-index: 4;
 	display: block;
 	width: 100%;
 	height: auto;
@@ -304,19 +304,30 @@ body::after {
 #branch-layer {
 	position: absolute;
 	inset: 0;
-	z-index: 3;
+	z-index: 6;
 	display: block;
 	width: 100%;
 	height: 100%;
 	pointer-events: none;
 }
 
+#flower-layer {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+#flower-layer { z-index: 7; }
+
 .growth-lens {
 	--lens-x: 50%;
 	--lens-y: 50%;
 	position: absolute;
 	inset: 0;
-	z-index: 2;
+	z-index: 5;
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 100% 100%;
@@ -335,7 +346,7 @@ body::after {
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	z-index: 4;
+	z-index: 8;
 	width: clamp(124px, 18vw, 208px);
 	aspect-ratio: 1;
 	border: 2px solid rgba(242, 140, 24, .78);
@@ -354,7 +365,7 @@ body::after {
 
 .growth-sound {
 	position: absolute;
-	z-index: 5;
+	z-index: 10;
 	max-width: 9rem;
 	padding: .3rem .55rem;
 	transform: translate(-50%, -50%) translateY(.7rem) rotate(-3deg);
@@ -411,7 +422,8 @@ body::after {
 	#wrap::before { inset: 0; }
 	#canvas,
 	#ground-layer,
-	#branch-layer {
+	#branch-layer,
+	#flower-layer {
 		position: absolute;
 		top: auto;
 		right: auto;
@@ -457,7 +469,8 @@ body::after {
 	#wrap { --clock-clearance: 0px; width: 100%; height: 100%; margin: 0; overflow: hidden; aspect-ratio: auto; background-position: center bottom !important; background-size: auto 100% !important; }
 	#canvas,
 	#ground-layer,
-	#branch-layer { position: absolute; top: 0; right: auto; bottom: auto; left: 50%; width: auto; height: 100%; transform: translateX(-50%); }
+	#branch-layer,
+	#flower-layer { position: absolute; top: 0; right: auto; bottom: auto; left: 50%; width: auto; height: 100%; transform: translateX(-50%); }
 	#text { top: 8px; left: 8px; width: 46%; }
 	#code { padding: 8px 10px; font-size: 12px; line-height: 1.2; }
 	#clock-box { right: auto; bottom: 8px; left: 8px; max-width: 46%; padding: 6px 9px; }
