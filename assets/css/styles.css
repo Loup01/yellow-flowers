@@ -398,7 +398,7 @@ body::after {
 		padding: max(8px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
 	}
 	#wrap {
-		--clock-clearance: clamp(74px, 10svh, 96px);
+		--clock-clearance: clamp(96px, 13svh, 124px);
 		width: 100%;
 		height: 100%;
 		aspect-ratio: auto;
@@ -427,25 +427,25 @@ body::after {
 		background-size: 205vw auto;
 	}
 	#text { top: 12px; left: 12px; width: calc(100% - 24px); }
-	#code { max-width: 390px; padding: 11px 13px; font-size: 14px; line-height: 1.27; }
-	#code::before { margin-bottom: 6px; font-size: 18px; }
-	#clock-box { right: 12px; bottom: 10px; left: 12px; max-width: none; padding: 8px 11px 9px; font-size: 14px; }
-	#clock-box::before { font-size: 15px; }
-	#clock-box a { font-size: 18px; }
-	#clock .digit { font-size: 18px; }
-	.branch-touch { font-size: 12px; }
+	#code { max-width: 420px; padding: 12px 14px; font-size: 16px; line-height: 1.34; }
+	#code::before { margin-bottom: 7px; font-size: 21px; }
+	#clock-box { right: 12px; bottom: 10px; left: 12px; max-width: none; padding: 10px 12px 11px; font-size: 15px; line-height: 1.15; }
+	#clock-box::before { font-size: 17px; }
+	#clock-box a { font-size: 20px; }
+	#clock .digit { font-size: 20px; }
+	.branch-touch { font-size: 14px; }
 	.opening-invitation { top: 52%; min-width: 180px; min-height: 68px; padding: 8px 17px 9px; }
 	.growth-lens.is-visible { clip-path: circle(clamp(48px, 15vw, 72px) at var(--lens-x) var(--lens-y)); }
 	.growth-lens-ring { width: clamp(96px, 30vw, 144px); }
 }
 
 @media (max-width: 480px) {
-	#code { padding: 10px 11px; font-size: clamp(12px, 3.65vw, 14px); }
-	#code::before { font-size: 17px; }
-	#clock-box { font-size: 12px; }
-	#clock-box::before { font-size: 14px; }
-	#clock-box a { font-size: 16px; }
-	#clock .digit { font-size: 16px; }
+	#code { padding: 11px 12px; font-size: clamp(15px, 4.2vw, 17px); }
+	#code::before { font-size: 20px; }
+	#clock-box { font-size: 14px; }
+	#clock-box::before { font-size: 16px; }
+	#clock-box a { font-size: 19px; }
+	#clock .digit { font-size: 19px; }
 	#main { padding-right: 4px; padding-left: 4px; }
 }
 
