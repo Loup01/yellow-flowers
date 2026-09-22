@@ -3,6 +3,8 @@
     var config = window.APP_CONFIG;
     var width = config.canvas.width;
     var height = config.canvas.height;
+    var branchLayer = document.getElementById('branch-layer');
+    var branchContext = branchLayer ? branchLayer.getContext('2d') : null;
     var viewportWidth = window.innerWidth || document.documentElement.clientWidth || width;
     var isNarrowScreen = viewportWidth <= 768;
 
@@ -106,6 +108,10 @@
 
     canvas.width = width;
     canvas.height = height;
+    if (branchLayer) {
+        branchLayer.width = width;
+        branchLayer.height = height;
+    }
 
     var opts = structuredClone(config.tree);
     opts.images = config.flowerImages;
@@ -170,7 +176,7 @@
         wrap.style.backgroundRepeat = "no-repeat";
         wrap.style.backgroundPosition = "center";
 
-        canvas.style.background = "#17120f";
+        canvas.style.background = "#f3e8d0";
         await sleep(300);
         canvas.style.background = "none";
     }
@@ -180,8 +186,109 @@
             tree.ctx.clearRect(0, 0, width, height);
             tree.jump();
             foot.draw();
+            drawExtraBranches();
             await sleep(25);
         }
+    }
+
+    var extraBranches = [];
+    var extraBranchCount = config.branchBoost || 0;
+    var branchSlots = [
+        [535, 292, 500, 248, 458, 212],
+        [548, 305, 584, 255, 632, 214],
+        [520, 330, 477, 294, 435, 255],
+        [567, 335, 615, 294, 667, 252],
+        [531, 274, 510, 230, 493, 185],
+        [557, 280, 590, 232, 624, 187],
+        [500, 356, 455, 333, 412, 300],
+        [590, 360, 638, 333, 691, 296]
+    ];
+
+    function branchForIndex(index) {
+        var slot = branchSlots[index % branchSlots.length];
+        var cycle = Math.floor(index / branchSlots.length);
+        var direction = index % 2 === 0 ? -1 : 1;
+        var drift = cycle * 8 * direction;
+        return {
+            p1: { x: slot[0] + drift, y: slot[1] - cycle * 4 },
+            p2: { x: slot[2] + drift * 1.15, y: slot[3] - cycle * 5 },
+            p3: { x: slot[4] + drift * 1.35, y: slot[5] - cycle * 6 },
+            progress: 0,
+            radius: Math.max(1.4, 5.5 - cycle * .3)
+        };
+    }
+
+    function bezierPoint(branch, progress) {
+        var inverse = 1 - progress;
+        return {
+            x: inverse * inverse * branch.p1.x + 2 * inverse * progress * branch.p2.x + progress * progress * branch.p3.x,
+            y: inverse * inverse * branch.p1.y + 2 * inverse * progress * branch.p2.y + progress * progress * branch.p3.y
+        };
+    }
+
+    function drawExtraBranches() {
+        if (!branchContext) {
+            return;
+        }
+
+        branchContext.clearRect(0, 0, width, height);
+        extraBranches.forEach(function (branch) {
+            var points = [];
+            var steps = Math.max(2, Math.ceil(branch.progress * 34));
+            for (var step = 0; step <= steps; step++) {
+                points.push(bezierPoint(branch, Math.min(branch.progress, step / 34)));
+            }
+
+            if (points.length < 2) {
+                return;
+            }
+
+            branchContext.save();
+            branchContext.beginPath();
+            branchContext.moveTo(points[0].x, points[0].y);
+            points.slice(1).forEach(function (point) {
+                branchContext.lineTo(point.x, point.y);
+            });
+            branchContext.strokeStyle = "rgba(64, 81, 59, .92)";
+            branchContext.lineWidth = branch.radius;
+            branchContext.lineCap = "round";
+            branchContext.lineJoin = "round";
+            branchContext.stroke();
+
+            if (branch.progress >= 1) {
+                var tip = bezierPoint(branch, 1);
+                branchContext.fillStyle = "rgba(242, 140, 24, .95)";
+                branchContext.beginPath();
+                branchContext.arc(tip.x, tip.y, Math.max(2.5, branch.radius * 1.25), 0, Math.PI * 2);
+                branchContext.fill();
+            }
+            branchContext.restore();
+        });
+    }
+
+    function growExtraBranch() {
+        if (!branchContext) {
+            return;
+        }
+
+        var branch = branchForIndex(extraBranchCount);
+        extraBranchCount += 1;
+        extraBranches.push(branch);
+
+        var started = performance.now();
+        var duration = 1600;
+        function animate(now) {
+            branch.progress = Math.min(1, (now - started) / duration);
+            drawExtraBranches();
+            if (branch.progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        }
+        requestAnimationFrame(animate);
+
+        var params = new URLSearchParams(window.location.search);
+        params.set("ramas", String(extraBranchCount));
+        window.history.replaceState({}, "", window.location.pathname + "?" + params.toString());
     }
 
     async function textAnimate() {
@@ -207,10 +314,7 @@
     var branchTouch = document.getElementById("branch-touch");
     if (branchTouch) {
         branchTouch.addEventListener("click", function () {
-            var params = new URLSearchParams(window.location.search);
-            var current = Math.max(0, parseInt(params.get("ramas") || "0", 10) || 0);
-            params.set("ramas", String(current + 1));
-            window.location.search = params.toString();
+            growExtraBranch();
         });
     }
 
