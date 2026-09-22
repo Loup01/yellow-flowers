@@ -64,16 +64,21 @@
 
     var params = new URLSearchParams(window.location.search);
     var saved = readSettings();
-    var recipientName = clampText(params.get("nombre"), 60) || clampText(saved.recipient, 60);
-    var startDate = normalizeDate(params.get("fecha")) || normalizeDate(saved.startDate) || DEFAULT_START_DATE;
-    var yearsParam = params.get("anios");
+    var compactLink = params.get("v") === "2";
+    var source = compactLink ? DEFAULT_SETTINGS : saved;
+    var recipientName = clampText(params.get("n") || params.get("nombre"), 60) || clampText(source.recipient, 60);
+    var startDate = normalizeDate(params.get("d") || params.get("fecha")) || normalizeDate(source.startDate) || DEFAULT_START_DATE;
+    var yearsParam = params.get("b");
+    if (yearsParam == null || yearsParam === "") {
+        yearsParam = params.get("anios");
+    }
     if (yearsParam == null || yearsParam === "") {
         yearsParam = params.get("ramas");
     }
     var branchBoost = yearsParam == null || yearsParam === ""
-        ? clampBoost(saved.branchBoost)
+        ? clampBoost(source.branchBoost)
         : clampBoost(yearsParam);
-    var flowerIntensity = normalizeFlowerIntensity(params.get("floracion") || saved.flowerIntensity);
+    var flowerIntensity = normalizeFlowerIntensity(params.get("i") || params.get("floracion") || source.flowerIntensity);
 
     window.APP_CONFIG = {
         storageKey: STORAGE_KEY,
@@ -87,13 +92,13 @@
         recipientName: recipientName,
         recipientDisplay: recipientName || DEFAULT_RECIPIENT_DISPLAY,
         message: {
-            line1: clampText(params.get("m1"), 140) || clampText(saved.line1, 140) || DEFAULT_SETTINGS.line1,
-            line2: clampText(params.get("m2"), 140) || clampText(saved.line2, 140) || DEFAULT_SETTINGS.line2,
-            line3: clampText(params.get("m3"), 220) || clampText(saved.line3, 220) || DEFAULT_SETTINGS.line3,
-            signature: clampText(params.get("firma"), 140) || clampText(saved.signature, 140) || DEFAULT_SETTINGS.signature
+            line1: clampText(params.get("1") || params.get("m1"), 140) || clampText(source.line1, 140) || DEFAULT_SETTINGS.line1,
+            line2: clampText(params.get("2") || params.get("m2"), 140) || clampText(source.line2, 140) || DEFAULT_SETTINGS.line2,
+            line3: clampText(params.get("3") || params.get("m3"), 220) || clampText(source.line3, 220) || DEFAULT_SETTINGS.line3,
+            signature: clampText(params.get("s") || params.get("firma"), 140) || clampText(source.signature, 140) || DEFAULT_SETTINGS.signature
         },
         branchBoost: branchBoost,
-        treeId: clampText(params.get("arbol"), 80),
+        treeId: clampText(params.get("a") || params.get("arbol"), 80),
         flowerIntensity: flowerIntensity,
         clock: {
             offsetHours: 0

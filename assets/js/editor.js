@@ -123,17 +123,25 @@
 
     function buildTreeUrl(profile, preview) {
         var data = profile.data;
-        var url = new URL("../index.html", window.location.href);
-        url.searchParams.set("arbol", profile.id);
-        url.searchParams.set("nombre", data.recipient);
-        url.searchParams.set("fecha", data.startDate);
-        url.searchParams.set("m1", data.line1);
-        url.searchParams.set("m2", data.line2);
-        url.searchParams.set("m3", data.line3);
-        url.searchParams.set("firma", data.signature);
-        url.searchParams.set("anios", String(data.branchBoost || 0));
-        url.searchParams.set("floracion", data.flowerIntensity || "equilibrada");
+        var url = new URL("../", window.location.href);
+        url.searchParams.set("v", "2");
+
+        function setIfDifferent(key, value, defaultValue) {
+            if (String(value == null ? "" : value) !== String(defaultValue)) {
+                url.searchParams.set(key, value);
+            }
+        }
+
+        setIfDifferent("n", data.recipient, defaults.recipient);
+        setIfDifferent("d", data.startDate, defaults.startDate);
+        setIfDifferent("1", data.line1, defaults.line1);
+        setIfDifferent("2", data.line2, defaults.line2);
+        setIfDifferent("3", data.line3, defaults.line3);
+        setIfDifferent("s", data.signature, defaults.signature);
+        setIfDifferent("b", String(data.branchBoost || 0), "0");
+        setIfDifferent("i", data.flowerIntensity || "equilibrada", defaults.flowerIntensity);
         if (preview) {
+            url.searchParams.set("a", profile.id);
             url.searchParams.set("preview", "1");
         }
         return url;
