@@ -1,5 +1,6 @@
 (function () {
     var STORAGE_KEY = "yellowFlowers.settings.v1";
+    var LIBRARY_KEY = "yellowFlowers.trees.v2";
     var defaults = {
         recipient: "el amor de mi vida",
         startDate: "2025-06-04T00:00",
@@ -19,14 +20,77 @@
     var undoYear = document.getElementById("undo-year");
     var previewFrame = document.getElementById("preview-frame");
     var previewSeason = document.getElementById("preview-season");
+    var treeSelector = document.getElementById("tree-selector");
+    var newTreeButton = document.getElementById("new-tree");
     var previewTimer = null;
+    var library = readLibrary();
 
-    function readSettings() {
+    function createId() {
+        if (window.crypto && window.crypto.randomUUID) {
+            return window.crypto.randomUUID();
+        }
+        return "arbol-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+    }
+
+    function readLegacySettings() {
         try {
             return Object.assign({}, defaults, JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || {});
         } catch (error) {
             return Object.assign({}, defaults);
         }
+    }
+
+    function readLibrary() {
+        try {
+            var stored = JSON.parse(localStorage.getItem(LIBRARY_KEY) || "null");
+            if (stored && Array.isArray(stored.items) && stored.items.length) {
+                stored.items = stored.items.map(function (item) {
+                    return { id: item.id, data: Object.assign({}, defaults, item.data || {}) };
+                });
+                if (!stored.items.some(function (item) { return item.id === stored.activeId; })) {
+                    stored.activeId = stored.items[0].id;
+                }
+                return stored;
+            }
+        } catch (error) {
+            /* migra la configuración anterior abajo */
+        }
+
+        var firstId = createId();
+        return {
+            activeId: firstId,
+            items: [{ id: firstId, data: readLegacySettings() }]
+        };
+    }
+
+    function activeProfile() {
+        return library.items.find(function (item) {
+            return item.id === library.activeId;
+        }) || library.items[0];
+    }
+
+    function profileName(profile, index) {
+        var name = String(profile.data.recipient || "").trim();
+        if (!name || name === defaults.recipient || name === "Nueva historia") {
+            return "Árbol " + (index + 1);
+        }
+        return "Árbol " + (index + 1) + " · " + name;
+    }
+
+    function persistLibrary() {
+        localStorage.setItem(LIBRARY_KEY, JSON.stringify(library));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(activeProfile().data));
+    }
+
+    function renderTreeSelector() {
+        treeSelector.innerHTML = "";
+        library.items.forEach(function (profile, index) {
+            var option = document.createElement("option");
+            option.value = profile.id;
+            option.textContent = profileName(profile, index);
+            option.selected = profile.id === library.activeId;
+            treeSelector.appendChild(option);
+        });
     }
 
     function collectFormData() {
@@ -39,8 +103,22 @@
         return data;
     }
 
-    function buildTreeUrl(data, preview) {
+    function saveCurrent(showMessage) {
+        var profile = activeProfile();
+        profile.data = Object.assign({}, profile.data, collectFormData());
+        persistLibrary();
+        renderTreeSelector();
+        if (showMessage) {
+            status.textContent = "Guardado en " + profileName(profile, library.items.indexOf(profile)) + ".";
+            status.className = "status success";
+        }
+        return profile;
+    }
+
+    function buildTreeUrl(profile, preview) {
+        var data = profile.data;
         var url = new URL("../index.html", window.location.href);
+        url.searchParams.set("arbol", profile.id);
         url.searchParams.set("nombre", data.recipient);
         url.searchParams.set("fecha", data.startDate);
         url.searchParams.set("m1", data.line1);
@@ -63,9 +141,16 @@
         return "Pasto de invierno";
     }
 
+    function updateEditorUrl() {
+        var url = new URL(window.location.href);
+        url.searchParams.set("arbol", library.activeId);
+        window.history.replaceState(null, "", url.pathname + url.search);
+    }
+
     function updatePreview() {
-        var data = Object.assign({}, readSettings(), collectFormData());
-        previewFrame.src = buildTreeUrl(data, true).href;
+        var profile = activeProfile();
+        profile.data = Object.assign({}, profile.data, collectFormData());
+        previewFrame.src = buildTreeUrl(profile, true).href;
     }
 
     function schedulePreview() {
@@ -73,76 +158,105 @@
         previewTimer = setTimeout(updatePreview, 320);
     }
 
-    function populate() {
-        var settings = readSettings();
-        Object.keys(settings).forEach(function (key) {
+    function populateProfile() {
+        var profile = activeProfile();
+        Object.keys(defaults).forEach(function (key) {
             var field = document.getElementById(key);
             if (field) {
-                field.value = settings[key];
+                field.value = profile.data[key];
             }
         });
-        previewSeason.textContent = currentSeasonLabel();
+        shareOutput.hidden = true;
+        status.textContent = "";
+        renderTreeSelector();
+        updateEditorUrl();
         updatePreview();
     }
+
+    var requestedId = new URLSearchParams(window.location.search).get("arbol");
+    if (requestedId && library.items.some(function (item) { return item.id === requestedId; })) {
+        library.activeId = requestedId;
+    }
+    persistLibrary();
+    previewSeason.textContent = currentSeasonLabel();
+    populateProfile();
 
     form.addEventListener("input", schedulePreview);
 
     form.addEventListener("submit", function (event) {
         event.preventDefault();
         var data = collectFormData();
-
         if (!data.startDate || isNaN(new Date(data.startDate).getTime())) {
             status.textContent = "Elige una fecha válida para iniciar el temporizador.";
             status.className = "status error";
             return;
         }
-
-        var next = Object.assign({}, readSettings(), data);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-        status.textContent = "Guardado. La vista del árbol se actualizará con esta historia.";
-        status.className = "status success";
+        saveCurrent(true);
         updatePreview();
     });
 
-    shareButton.addEventListener("click", function () {
-        var data = Object.assign({}, readSettings(), collectFormData());
-        var url = buildTreeUrl(data, false);
+    treeSelector.addEventListener("change", function () {
+        var nextId = treeSelector.value;
+        saveCurrent(false);
+        library.activeId = nextId;
+        persistLibrary();
+        populateProfile();
+    });
 
+    newTreeButton.addEventListener("click", function () {
+        saveCurrent(false);
+        var profile = {
+            id: createId(),
+            data: Object.assign({}, defaults, {
+                recipient: "Nueva historia",
+                branchBoost: 0
+            })
+        };
+        library.items.push(profile);
+        library.activeId = profile.id;
+        persistLibrary();
+        populateProfile();
+        document.getElementById("recipient").focus();
+        document.getElementById("recipient").select();
+        status.textContent = "Nuevo árbol creado. Personalízalo y guarda los cambios.";
+        status.className = "status success";
+    });
+
+    shareButton.addEventListener("click", function () {
+        var profile = saveCurrent(false);
+        var url = buildTreeUrl(profile, false);
         shareUrl.value = url.href;
         shareOutput.hidden = false;
         shareUrl.focus();
         shareUrl.select();
 
+        var message = "Enlace creado. Este árbol conserva su propia historia.";
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(url.href).then(function () {
-                status.textContent = "Enlace creado y copiado. Este árbol conservará su propia historia.";
+                status.textContent = "Enlace creado y copiado. Este árbol conserva su propia historia.";
                 status.className = "status success";
             }).catch(function () {
-                status.textContent = "Enlace creado. Selecciónalo y cópialo para compartirlo.";
+                status.textContent = message;
                 status.className = "status success";
             });
         } else {
-            status.textContent = "Enlace creado. Selecciónalo y cópialo para compartirlo.";
+            status.textContent = message;
             status.className = "status success";
         }
     });
 
     undoYear.addEventListener("click", function () {
-        var next = Object.assign({}, readSettings(), collectFormData());
-        var currentYears = Math.max(0, parseInt(next.branchBoost, 10) || 0);
-
+        var profile = saveCurrent(false);
+        var currentYears = Math.max(0, parseInt(profile.data.branchBoost, 10) || 0);
         if (currentYears === 0) {
-            status.textContent = "No hay años simulados que deshacer.";
+            status.textContent = "Este árbol no tiene años simulados que deshacer.";
             status.className = "status error";
             return;
         }
-
-        next.branchBoost = currentYears - 1;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-        status.textContent = "Se deshizo el último año simulado. Quedan " + next.branchBoost + ".";
+        profile.data.branchBoost = currentYears - 1;
+        persistLibrary();
+        status.textContent = "Se deshizo el último año de este árbol. Quedan " + profile.data.branchBoost + ".";
         status.className = "status success";
         updatePreview();
     });
-
-    populate();
 })();

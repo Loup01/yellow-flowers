@@ -93,6 +93,7 @@
             signature: clampText(params.get("firma"), 140) || clampText(saved.signature, 140) || DEFAULT_SETTINGS.signature
         },
         branchBoost: branchBoost,
+        treeId: clampText(params.get("arbol"), 80),
         flowerIntensity: flowerIntensity,
         clock: {
             offsetHours: 0

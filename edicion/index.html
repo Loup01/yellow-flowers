@@ -15,6 +15,18 @@
                 <p class="intro">Personaliza la historia y observa los cambios antes de crear un enlace único para cada pareja.</p>
             </header>
 
+            <section class="tree-library" aria-labelledby="tree-library-title">
+                <div>
+                    <h2 id="tree-library-title">Mis árboles</h2>
+                    <p>Elige cuál historia quieres editar o crea una nueva.</p>
+                </div>
+                <label class="tree-picker">
+                    <span>Árbol seleccionado</span>
+                    <select id="tree-selector" aria-label="Árbol seleccionado"></select>
+                </label>
+                <button id="new-tree" class="secondary" type="button">Crear otro árbol</button>
+            </section>
+
             <div class="editor-workspace">
                 <form id="editor-form">
                     <label><span>Nombre de ella</span><input id="recipient" name="recipient" maxlength="40" autocomplete="off" required></label>

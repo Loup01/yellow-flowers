@@ -565,6 +565,21 @@
             var raw = JSON.parse(localStorage.getItem(config.storageKey) || "null") || {};
             raw.branchBoost = boostCount;
             localStorage.setItem(config.storageKey, JSON.stringify(raw));
+
+            if (config.treeId) {
+                var libraryKey = "yellowFlowers.trees.v2";
+                var library = JSON.parse(localStorage.getItem(libraryKey) || "null");
+                if (library && Array.isArray(library.items)) {
+                    var profile = library.items.find(function (item) {
+                        return item.id === config.treeId;
+                    });
+                    if (profile) {
+                        profile.data.branchBoost = boostCount;
+                        library.activeId = profile.id;
+                        localStorage.setItem(libraryKey, JSON.stringify(library));
+                    }
+                }
+            }
         } catch (error) {
             /* sin almacenamiento disponible */
         }

@@ -94,6 +94,29 @@ h1 {
     line-height: 1.5;
 }
 
+.tree-library {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) minmax(240px, 1.2fr) auto;
+    gap: 20px;
+    align-items: end;
+    margin: 0 0 36px;
+    padding: 18px 0 22px;
+    border-top: 1px solid rgba(143, 36, 49, .18);
+    border-bottom: 1px solid rgba(143, 36, 49, .18);
+}
+
+.tree-library h2 {
+    margin: 0;
+    color: var(--granada);
+    font-family: var(--mano);
+    font-size: 1.85rem;
+    font-weight: 600;
+}
+
+.tree-library p { margin: 2px 0 0; color: #765d46; line-height: 1.35; }
+.tree-picker span { font-size: 1.15rem; }
+.tree-library button { white-space: nowrap; }
+
 .editor-workspace {
     display: grid;
     grid-template-columns: minmax(290px, .78fr) minmax(420px, 1.22fr);
@@ -219,6 +242,8 @@ button,
 
 @media (max-width: 900px) {
     .editor-header { grid-template-columns: 1fr; gap: 18px; }
+    .tree-library { grid-template-columns: 1fr 1fr; }
+    .tree-library > div { grid-column: 1 / -1; }
     .editor-workspace { grid-template-columns: 1fr; }
     .preview-panel { position: static; order: -1; }
 }
@@ -227,6 +252,9 @@ button,
     .editor-shell { width: min(100% - 20px, 1220px); padding-top: 14px; }
     .editor-card { padding: 24px 18px 28px; }
     .editor-header { margin-bottom: 26px; }
+    .tree-library { grid-template-columns: 1fr; gap: 14px; margin-bottom: 26px; }
+    .tree-library > div { grid-column: auto; }
+    .tree-library button { width: 100%; }
     .preview-heading { align-items: flex-start; flex-direction: column; gap: 2px; }
     .actions > * { width: 100%; }
 }
