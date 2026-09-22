@@ -319,6 +319,7 @@
     async function textAnimate() {
         var together = new Date(config.startDate);
         var code = document.getElementById("code");
+        code.dataset.recipient = "para " + config.recipientDisplay;
         var lines = [
             [document.getElementById("message-line-1"), config.message.line1],
             [document.getElementById("message-line-2"), config.message.line2],
