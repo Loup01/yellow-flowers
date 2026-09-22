@@ -393,12 +393,13 @@ body::after {
 		padding: max(8px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
 	}
 	#wrap {
+		--clock-clearance: clamp(74px, 10svh, 96px);
 		width: 100%;
 		height: 100%;
 		aspect-ratio: auto;
 		margin: 0 auto;
 		overflow: hidden;
-		background-position: 70% bottom !important;
+		background-position: 70% calc(100% - var(--clock-clearance)) !important;
 		background-size: 180vw auto !important;
 		filter: drop-shadow(0 14px 22px rgba(0, 0, 0, .24));
 	}
@@ -409,7 +410,7 @@ body::after {
 		position: absolute;
 		top: auto;
 		right: auto;
-		bottom: 0;
+		bottom: var(--clock-clearance);
 		left: 50%;
 		width: 180vw;
 		height: auto;
@@ -417,7 +418,7 @@ body::after {
 		transform: translateX(-59%);
 	}
 	.growth-lens {
-		background-position: 70% bottom;
+		background-position: 70% calc(100% - var(--clock-clearance));
 		background-size: 180vw auto;
 	}
 	#text { top: 12px; left: 12px; width: calc(100% - 24px); }
@@ -448,7 +449,7 @@ body::after {
 	body,
 	#main { min-height: 100svh; height: 100svh; overflow: hidden; }
 	#main { padding: 4px max(8px, env(safe-area-inset-right)) 4px max(8px, env(safe-area-inset-left)); }
-	#wrap { width: 100%; height: 100%; margin: 0; overflow: hidden; aspect-ratio: auto; background-size: auto 100% !important; }
+	#wrap { --clock-clearance: 0px; width: 100%; height: 100%; margin: 0; overflow: hidden; aspect-ratio: auto; background-position: center bottom !important; background-size: auto 100% !important; }
 	#canvas,
 	#ground-layer,
 	#branch-layer { position: absolute; top: 0; right: auto; bottom: auto; left: 50%; width: auto; height: 100%; transform: translateX(-50%); }
