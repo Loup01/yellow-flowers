@@ -14,6 +14,8 @@ Y entra a `http://localhost:8000`.
 
 ## Personalización
 
+También puedes abrir [`editar.html`](./editar.html) para cambiar el nombre, el mensaje y la fecha del temporizador desde una pestaña separada. Los cambios se guardan en el navegador y se sincronizan al recargar el árbol.
+
 Puedes cambiar el nombre y la fecha directamente en la URL, sin tocar el código:
 
 ```text
@@ -22,6 +24,8 @@ https://yellow-flowers-url.vercel.app/index.html?nombre=Eduarda&fecha=2026-04-13
 
 - **nombre**: a quién van dedicadas las flores.
 - **fecha**: desde cuándo empieza a contar el tiempo.
+
+El árbol añade ramas según los meses transcurridos desde la fecha elegida y el mensaje permanece orientado a una historia que sigue floreciendo.
 
 Para más ajustes (imágenes, tamaño, mensaje), edita `assets/js/config.js` y el bloque `#code` de `index.html`.
 

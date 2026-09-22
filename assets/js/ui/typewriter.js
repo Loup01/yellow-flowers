@@ -1,25 +1,25 @@
 (function (window) {
-    function typewriter(element) {
-        var content = element.innerHTML;
+    function typewriter(element, text, options) {
+        var content = text == null ? element.textContent : String(text);
         var progress = 0;
+        var opts = options || {};
+        var speed = opts.speed || 34;
 
-        element.innerHTML = "";
+        if (element._typewriterTimer) {
+            clearInterval(element._typewriterTimer);
+        }
 
-        var timer = setInterval(function () {
-            var current = content.charAt(progress);
-
-            if (current === "<") {
-                progress = content.indexOf(">", progress) + 1;
-            } else {
-                progress++;
-            }
-
-            element.innerHTML = content.substring(0, progress) + (progress & 1 ? "_" : "");
+        element.textContent = "";
+        element._typewriterTimer = setInterval(function () {
+            progress++;
+            element.textContent = content.substring(0, progress) + (progress < content.length && progress % 2 ? "_" : "");
 
             if (progress >= content.length) {
-                clearInterval(timer);
+                clearInterval(element._typewriterTimer);
+                element._typewriterTimer = null;
+                element.textContent = content;
             }
-        }, 75);
+        }, speed);
 
         return element;
     }

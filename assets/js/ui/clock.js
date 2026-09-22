@@ -12,6 +12,7 @@
         }
 
         var seconds = Math.floor((current.getTime() - startDate.getTime()) / 1000);
+        seconds = Math.max(0, seconds);
         var days = Math.floor(seconds / (3600 * 24));
 
         seconds = seconds % (3600 * 24);

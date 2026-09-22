@@ -184,6 +184,27 @@ body::after {
 	font-weight: 600;
 }
 
+.editor-link {
+	position: absolute;
+	right: 2%;
+	bottom: 2%;
+	z-index: 3;
+	padding: .45rem .7rem;
+	border: 1px solid rgba(245, 184, 46, .28);
+	border-radius: 999px;
+	color: var(--marfil);
+	background: rgba(23, 18, 15, .74);
+	font-family: var(--mano);
+	font-size: 1.2rem;
+	text-decoration: none;
+}
+
+.editor-link:hover,
+.editor-link:focus-visible {
+	border-color: var(--petalo);
+	color: var(--hueso);
+}
+
 #canvas {
 	display: block;
 	width: 100%;
@@ -206,6 +227,7 @@ body::after {
 	#clock-box::before { font-size: 15px; }
 	#clock-box a { font-size: 18px; }
 	#clock .digit { font-size: 18px; }
+	.editor-link { right: 12px; bottom: 8px; font-size: 1rem; }
 }
 
 @media (max-width: 480px) {

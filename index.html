@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Flores Amarillas</title>
+    <title>Siempre floreceremos</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <meta name="language" content="es-ES">
-    <meta name="title" content="Flores Amarillas">
-    <meta name="description" content="Un recordatorio para esa persona especial.">
+    <meta name="title" content="Siempre floreceremos">
+    <meta name="description" content="Un árbol que crece con nuestra historia.">
     <link type="text/css" rel="stylesheet" href="./assets/css/styles.css">
     <script type="text/javascript" src="./assets/js/config.js"></script>
     <script type="text/javascript" src="./assets/js/ui/typewriter.js"></script>
@@ -19,18 +19,20 @@
     <div id="main">
         <div id="wrap">
             <div id="text">
-                <div id="code">
-                    <span class="say">Flores Amarillas para <span id="recipient-name">el amor de mi vida</span>:</span><br><br>
-                    <span class="say">Si pudiera elegir un lugar seguro, sería a tu lado.</span><br><br>
-                    <span class="say">Cuanto más tiempo estoy contigo más te amo.</span><br><br>
-                    <span class="say"><span class="space"></span> — I Love You!</span>
+                <div id="code" aria-live="polite">
+                    <span id="message-line-1" class="say"></span><br><br>
+                    <span id="message-line-2" class="say"></span><br><br>
+                    <span id="message-line-3" class="say"></span><br><br>
+                    <span id="message-signature" class="say"></span>
                 </div>
             </div>
             <div id="clock-box">
-                <a>Mi amor</a>
-                <a>por ti</a> comenzó hace...
+                <a id="clock-title">Nuestro amor</a>
+                <span id="clock-label">florece desde hace...</span>
                 <div id="clock"></div>
             </div>
+
+            <a class="editor-link" href="./editar.html" target="_blank" rel="noopener">Editar dedicatoria ↗</a>
 
             <canvas id="canvas" width="1100" height="680"></canvas>
         </div>
