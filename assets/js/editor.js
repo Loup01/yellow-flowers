@@ -17,6 +17,9 @@
     var shareButton = document.getElementById("share-button");
     var shareOutput = document.getElementById("share-output");
     var shareUrl = document.getElementById("share-url");
+    var copyLinkButton = document.getElementById("copy-link");
+    var nativeShareButton = document.getElementById("native-share");
+    var libraryStatus = document.getElementById("library-status");
     var undoYear = document.getElementById("undo-year");
     var previewFrame = document.getElementById("preview-frame");
     var previewSeason = document.getElementById("preview-season");
@@ -91,6 +94,9 @@
             option.selected = profile.id === library.activeId;
             treeSelector.appendChild(option);
         });
+        libraryStatus.textContent = library.items.length + (library.items.length === 1
+            ? " árbol guardado en este dispositivo."
+            : " árboles guardados en este dispositivo.");
     }
 
     function collectFormData() {
@@ -230,18 +236,54 @@
         shareUrl.focus();
         shareUrl.select();
 
-        var message = "Enlace creado. Este árbol conserva su propia historia.";
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(url.href).then(function () {
-                status.textContent = "Enlace creado y copiado. Este árbol conserva su propia historia.";
-                status.className = "status success";
+        copyShareUrl();
+    });
+
+    function fallbackCopy() {
+        shareUrl.focus();
+        shareUrl.select();
+        shareUrl.setSelectionRange(0, shareUrl.value.length);
+        return document.execCommand && document.execCommand("copy");
+    }
+
+    function copyShareUrl() {
+        if (!shareUrl.value) {
+            status.textContent = "Primero pulsa Generar enlace.";
+            status.className = "status error";
+            return;
+        }
+
+        var copied = navigator.clipboard && window.isSecureContext
+            ? navigator.clipboard.writeText(shareUrl.value).then(function () { return true; }).catch(fallbackCopy)
+            : Promise.resolve(fallbackCopy());
+
+        copied.then(function (success) {
+            status.textContent = success
+                ? "Enlace copiado. Ya puedes pegarlo en WhatsApp."
+                : "El enlace está listo. Mantén presionada la barra para copiarlo.";
+            status.className = "status success";
+        });
+    }
+
+    copyLinkButton.addEventListener("click", copyShareUrl);
+
+    nativeShareButton.addEventListener("click", function () {
+        if (!shareUrl.value) {
+            status.textContent = "Primero pulsa Generar enlace.";
+            status.className = "status error";
+            return;
+        }
+
+        if (navigator.share) {
+            navigator.share({
+                title: "Nuestro árbol",
+                text: "Este árbol cuenta nuestra historia.",
+                url: shareUrl.value
             }).catch(function () {
-                status.textContent = message;
-                status.className = "status success";
+                /* cancelar la hoja de compartir no es un error */
             });
         } else {
-            status.textContent = message;
-            status.className = "status success";
+            copyShareUrl();
         }
     });
 

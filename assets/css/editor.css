@@ -114,6 +114,7 @@ h1 {
 }
 
 .tree-library p { margin: 2px 0 0; color: #765d46; line-height: 1.35; }
+.library-status { display: block; margin-top: 6px; color: var(--hoja); }
 .tree-picker span { font-size: 1.15rem; }
 .tree-library button { white-space: nowrap; }
 
@@ -180,8 +181,17 @@ button,
 .status { min-height: 1.4em; margin: 0; font-size: 1rem; }
 .status.success { color: var(--hoja); }
 .status.error { color: var(--granada); }
-.share-output { margin-top: 4px; }
-.share-output input { color: #765d46; font-size: .88rem; }
+.share-output {
+    display: grid;
+    gap: 9px;
+    margin-top: 4px;
+    padding: 16px;
+    background: rgba(242, 140, 24, .08);
+}
+.share-output[hidden] { display: none; }
+.share-output input { color: #5d4736; font-size: .9rem; }
+.share-output code { overflow-wrap: anywhere; color: var(--granada); font: inherit; }
+.share-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
 .preview-panel {
     position: sticky;

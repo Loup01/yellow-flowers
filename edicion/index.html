@@ -19,6 +19,7 @@
                 <div>
                     <h2 id="tree-library-title">Mis árboles</h2>
                     <p>Elige cuál historia quieres editar o crea una nueva.</p>
+                    <small id="library-status" class="library-status"></small>
                 </div>
                 <label class="tree-picker">
                     <span>Árbol seleccionado</span>
@@ -47,12 +48,20 @@
 
                     <div class="actions">
                         <button class="primary" type="submit">Guardar cambios</button>
-                        <button id="share-button" class="secondary" type="button">Crear enlace personalizado</button>
+                        <button id="share-button" class="secondary" type="button">Generar enlace</button>
                         <button id="undo-year" class="secondary" type="button">Deshacer último año</button>
                         <a class="secondary" href="../index.html" target="_blank" rel="noopener">Abrir árbol</a>
                     </div>
                     <p id="save-status" class="status" role="status" aria-live="polite"></p>
-                    <label id="share-output" class="share-output" hidden><span>Enlace para compartir</span><input id="share-url" type="text" readonly></label>
+                    <section id="share-output" class="share-output" aria-labelledby="share-title" hidden>
+                        <label for="share-url"><span id="share-title">Enlace listo para compartir</span></label>
+                        <input id="share-url" type="text" readonly placeholder="Aquí aparecerá el enlace de este árbol">
+                        <small>No tienes que escribir nada aquí. Ejemplo: <code>https://tu-sitio.vercel.app/?nombre=Berenice...</code></small>
+                        <div class="share-actions">
+                            <button id="copy-link" class="primary" type="button">Copiar enlace</button>
+                            <button id="native-share" class="secondary" type="button">Compartir</button>
+                        </div>
+                    </section>
                 </form>
 
                 <aside class="preview-panel" aria-labelledby="preview-title">
