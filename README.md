@@ -14,7 +14,7 @@ Y entra a `http://localhost:8000`.
 
 ## Personalización
 
-También puedes abrir [`editar.html`](./editar.html) para cambiar el nombre, el mensaje y la fecha del temporizador desde una pestaña separada. Los cambios se guardan en el navegador y se sincronizan al recargar el árbol.
+También puedes abrir [`/edicion/`](./edicion/) para cambiar el nombre, el mensaje y la fecha del temporizador desde una pestaña separada. Los cambios se guardan en el navegador y se sincronizan al recargar el árbol. Desde ahí puedes crear enlaces independientes para compartir otro árbol.
 
 Puedes cambiar el nombre y la fecha directamente en la URL, sin tocar el código:
 

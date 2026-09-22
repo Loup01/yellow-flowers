@@ -128,6 +128,9 @@ button, .secondary {
 .status.success { color: #40513b; }
 .status.error { color: var(--granada); }
 
+.share-output { margin-top: 4px; }
+.share-output input { color: #765d46; font-size: .88rem; }
+
 @media (max-width: 520px) {
     .editor-shell { width: min(100% - 20px, 720px); padding-top: 20px; }
     .editor-card { padding: 24px 18px 28px; }

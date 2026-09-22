@@ -139,6 +139,25 @@ body::after {
 	font-size: 1.22em;
 }
 
+.branch-touch {
+	border: 0;
+	padding: 0;
+	color: var(--granada);
+	background: transparent;
+	font: inherit;
+	font-size: 12px;
+	font-style: italic;
+	text-decoration: underline;
+	text-decoration-color: rgba(143, 36, 49, .45);
+	text-underline-offset: .18em;
+	cursor: pointer;
+}
+
+.branch-touch:hover,
+.branch-touch:focus-visible {
+	color: var(--cempasuchil);
+}
+
 .space { margin-right: 0; }
 
 #clock-box {
@@ -228,6 +247,7 @@ body::after {
 	#clock-box a { font-size: 18px; }
 	#clock .digit { font-size: 18px; }
 	.editor-link { right: 12px; bottom: 8px; font-size: 1rem; }
+	.branch-touch { font-size: 12px; }
 }
 
 @media (max-width: 480px) {
@@ -238,6 +258,11 @@ body::after {
 	#clock-box::before { font-size: 14px; }
 	#clock-box a { font-size: 16px; }
 	#clock .digit { font-size: 16px; }
+	#main { padding-right: 6px; padding-left: 6px; }
+	#wrap { width: 98vw; }
+	#text { width: 63%; }
+	#code { font-size: 12px; }
+	#clock-box { max-width: 63%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

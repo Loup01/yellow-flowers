@@ -40,11 +40,12 @@
         recipientName: recipientName,
         recipientDisplay: recipientName || DEFAULT_RECIPIENT_DISPLAY,
         message: {
-            line1: saved.line1,
-            line2: saved.line2,
-            line3: saved.line3,
-            signature: saved.signature
+            line1: params.get("m1") || saved.line1,
+            line2: params.get("m2") || saved.line2,
+            line3: params.get("m3") || saved.line3,
+            signature: params.get("firma") || saved.signature
         },
+        branchBoost: Math.max(0, parseInt(params.get("ramas") || "0", 10) || 0),
         clock: {
             offsetHours: 0
         },

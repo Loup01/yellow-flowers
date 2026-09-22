@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Editar nuestra historia</title>
+    <link rel="stylesheet" href="../assets/css/editor.css">
+</head>
+<body>
+    <main class="editor-shell">
+        <a class="back-link" href="../index.html">← Volver al árbol</a>
+        <section class="editor-card" aria-labelledby="editor-title">
+            <p class="eyebrow">Nuestro jardín</p>
+            <h1 id="editor-title">Edita lo que siempre florecerá</h1>
+            <p class="intro">Crea tu propio árbol: cambia el nombre, la fecha y el mensaje. Después genera un enlace distinto para cada pareja.</p>
+
+            <form id="editor-form">
+                <label><span>Nombre de ella</span><input id="recipient" name="recipient" maxlength="40" autocomplete="off" required></label>
+                <label><span>Comenzamos nuestra historia</span><input id="startDate" name="startDate" type="datetime-local" required><small>El temporizador y las ramas contarán desde esta fecha.</small></label>
+                <label><span>Primera línea</span><input id="line1" name="line1" maxlength="100" required></label>
+                <label><span>Segunda línea</span><input id="line2" name="line2" maxlength="120" required></label>
+                <label><span>Tercera línea</span><textarea id="line3" name="line3" maxlength="160" rows="3" required></textarea></label>
+                <label><span>Firma</span><input id="signature" name="signature" maxlength="100" required></label>
+
+                <div class="actions">
+                    <button class="primary" type="submit">Guardar cambios</button>
+                    <button id="share-button" class="secondary" type="button">Crear enlace personalizado</button>
+                    <a class="secondary" href="../index.html" target="_blank" rel="noopener">Abrir árbol</a>
+                </div>
+                <p id="save-status" class="status" role="status" aria-live="polite"></p>
+                <label id="share-output" class="share-output" hidden><span>Enlace para compartir</span><input id="share-url" type="text" readonly></label>
+            </form>
+        </section>
+    </main>
+    <script src="../assets/js/editor.js"></script>
+</body>
+</html>

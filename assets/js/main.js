@@ -31,8 +31,8 @@
 
     // Cada mes de historia suma una rama nueva. Las ramas se incorporan al
     // crecimiento inicial sin tocar el ramo ni la ilustración de flores.
-    function relationshipBranches(startDate) {
-        var count = Math.floor(elapsedDays(startDate) / 30);
+    function relationshipBranches(startDate, branchBoost) {
+        var count = Math.floor(elapsedDays(startDate) / 30) + (branchBoost || 0);
         var slots = [
             [540, 285, 510, 225, 470, 190],
             [545, 300, 580, 235, 625, 190],
@@ -109,7 +109,7 @@
 
     var opts = structuredClone(config.tree);
     opts.images = config.flowerImages;
-    opts.branch = opts.branch.concat(relationshipBranches(config.startDate));
+    opts.branch = opts.branch.concat(relationshipBranches(config.startDate, config.branchBoost));
     opts.seed = Object.assign({}, opts.seed, {
         x: width / 2 - 20
     });
@@ -188,6 +188,10 @@
         var together = new Date(config.startDate);
         var code = document.getElementById("code");
         var settings = readSavedSettings();
+        settings.line1 = config.message.line1;
+        settings.line2 = config.message.line2;
+        settings.line3 = config.message.line3;
+        settings.signature = config.message.signature;
 
         fadeIn(code, 450);
         await renderMessage(settings, true);
@@ -198,6 +202,16 @@
             clock.innerHTML = AppClock.formatElapsedHtml(together, config.clock);
             await sleep(1000);
         }
+    }
+
+    var branchTouch = document.getElementById("branch-touch");
+    if (branchTouch) {
+        branchTouch.addEventListener("click", function () {
+            var params = new URLSearchParams(window.location.search);
+            var current = Math.max(0, parseInt(params.get("ramas") || "0", 10) || 0);
+            params.set("ramas", String(current + 1));
+            window.location.search = params.toString();
+        });
     }
 
     window.addEventListener("storage", function (event) {
