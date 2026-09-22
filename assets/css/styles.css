@@ -1,66 +1,187 @@
-body {
-	margin: 0;
-	padding: 0;
-	background: #F5E8DC;
-	font-size: 20px;
-	font-family: '微软雅黑', '宋体', sans-serif;
-	color: #5C4033;
-	overflow-x: hidden;
+@font-face {
+	font-family: "Cormorant";
+	src: url("../fonts/cormorant-400.woff2") format("woff2");
+	font-weight: 300 700;
+	font-display: swap;
 }
 
-a {
-	color: #5C4033;
-	font-size: 14px;
+@font-face {
+	font-family: "Caveat";
+	src: url("../fonts/caveat-600.woff2") format("woff2");
+	font-weight: 400 700;
+	font-display: swap;
+}
+
+:root {
+	--obsidiana: #17120f;
+	--tinta: #2a1e18;
+	--marfil: #f3e8d0;
+	--hueso: #fff8e9;
+	--cempasuchil: #f28c18;
+	--petalo: #f5b82e;
+	--granada: #8f2431;
+	--bugambilia: #b83b72;
+	--hoja: #40513b;
+	--serif: "Cormorant", Garamond, Georgia, serif;
+	--mano: "Caveat", "Segoe Script", cursive;
+}
+
+* { box-sizing: border-box; }
+
+html {
+	min-width: 320px;
+	background: var(--obsidiana);
+	color-scheme: dark;
+}
+
+body {
+	position: relative;
+	min-height: 100vh;
+	margin: 0;
+	overflow-x: hidden;
+	background:
+		radial-gradient(circle at 13% 17%, rgba(242, 140, 24, .14), transparent 25rem),
+		radial-gradient(circle at 86% 82%, rgba(143, 36, 49, .16), transparent 28rem),
+		linear-gradient(135deg, #17120f 0%, #211710 52%, #17120f 100%);
+	color: var(--marfil);
+	font-family: var(--serif);
+	-webkit-font-smoothing: antialiased;
+}
+
+body::before,
+body::after {
+	position: fixed;
+	content: "";
+	pointer-events: none;
+}
+
+body::before {
+	inset: 18px;
+	border: 1px solid rgba(245, 184, 46, .28);
+	box-shadow: inset 0 0 0 5px rgba(243, 232, 208, .035);
+}
+
+body::after {
+	right: 6vw;
+	bottom: 8vh;
+	width: 5rem;
+	height: 5rem;
+	border: 1px solid rgba(242, 140, 24, .36);
+	border-radius: 50%;
+	box-shadow: 0 0 0 10px rgba(242, 140, 24, .05), 0 0 0 20px rgba(242, 140, 24, .035);
+	opacity: .75;
 }
 
 #main {
+	position: relative;
+	z-index: 1;
 	width: 100%;
-	padding: 16px;
-	box-sizing: border-box;
+	padding: clamp(30px, 5vw, 72px) 16px 28px;
 }
 
 #wrap {
 	position: relative;
-	margin: 0 auto;
 	width: min(1100px, 94vw);
 	aspect-ratio: 1100 / 680;
-	margin-top: clamp(12px, 6vh, 100px);
+	margin: clamp(8px, 3vh, 38px) auto 0;
+	filter: drop-shadow(0 26px 36px rgba(0, 0, 0, .34));
+}
+
+#wrap::before {
+	position: absolute;
+	inset: 1.2% 0;
+	content: "";
+	border: 0;
+	border-radius: 4px;
+	background: linear-gradient(90deg, transparent, rgba(242, 140, 24, .05), transparent), rgba(23, 18, 15, .34);
+	box-shadow: inset 0 0 60px rgba(0, 0, 0, .18);
+	pointer-events: none;
 }
 
 #text {
-	width: min(400px, 40%);
-	left: clamp(16px, 4.8vw, 60px);
-	top: clamp(12px, 8vh, 80px);
 	position: absolute;
+	top: clamp(18px, 7vh, 76px);
+	left: clamp(18px, 4.8vw, 60px);
 	z-index: 2;
+	width: min(400px, 40%);
 }
 
 #code {
 	display: none;
-	font-size: clamp(16px, 2.4vw, 30px);
-	line-height: 1.3;
+	padding: clamp(16px, 2vw, 26px) clamp(18px, 2.4vw, 32px);
+	border: 0;
+	border-radius: 2px;
+	background: radial-gradient(circle at 14% 20%, rgba(64, 81, 59, .055) 0 1px, transparent 1.5px) 0 0 / 11px 11px, linear-gradient(145deg, rgba(255, 248, 233, .98), rgba(243, 232, 208, .96));
+	box-shadow: 0 18px 32px rgba(0, 0, 0, .3), inset 0 0 0 5px rgba(255, 248, 233, .35);
+	color: var(--tinta);
+	font-size: clamp(18px, 2.35vw, 30px);
+	font-weight: 500;
+	line-height: 1.38;
+	letter-spacing: -.015em;
 }
 
+#code::before {
+	display: block;
+	margin: -3px 0 11px;
+	color: var(--cempasuchil);
+	content: "✦  para ti  ✦";
+	font-family: var(--mano);
+	font-size: clamp(20px, 2.1vw, 29px);
+	line-height: 1;
+	text-align: center;
+}
+
+.say { display: inline; margin-left: 0; }
+
+.say:last-child {
+	color: var(--granada);
+	font-family: var(--mano);
+	font-size: 1.22em;
+}
+
+.space { margin-right: 0; }
+
 #clock-box {
-	position: absolute;
-	left: clamp(16px, 4.8vw, 60px);
-	bottom: clamp(8px, 2.5vh, 28px);
-	font-size: clamp(16px, 2.1vw, 28px);
 	display: none;
+	position: absolute;
+	bottom: clamp(12px, 2.5vh, 28px);
+	left: clamp(18px, 4.8vw, 60px);
 	z-index: 2;
+	max-width: min(400px, 40%);
+	padding: 9px 14px 11px;
+	border: 1px solid rgba(245, 184, 46, .32);
+	border-radius: 2px;
+	background: rgba(23, 18, 15, .82);
+	box-shadow: 0 10px 24px rgba(0, 0, 0, .2);
+	color: var(--marfil);
+	font-size: clamp(16px, 2vw, 26px);
+	line-height: 1.05;
+	text-wrap: balance;
+}
+
+#clock-box::before {
+	display: block;
+	margin-bottom: 4px;
+	color: var(--cempasuchil);
+	content: "un amor que sigue floreciendo";
+	font-family: var(--mano);
+	font-size: clamp(17px, 1.7vw, 23px);
 }
 
 #clock-box a {
-	font-size: clamp(18px, 2.3vw, 30px);
+	color: var(--petalo);
+	font-family: var(--mano);
+	font-size: clamp(22px, 2.5vw, 32px);
 	text-decoration: none;
 }
 
-#clock {
-	margin-left: 5px;
-}
+#clock { margin-left: 0; color: var(--hueso); }
 
 #clock .digit {
-	font-size: clamp(20px, 3vw, 40px);
+	color: var(--petalo);
+	font-family: var(--serif);
+	font-size: clamp(22px, 3vw, 40px);
+	font-weight: 600;
 }
 
 #canvas {
@@ -69,58 +190,39 @@ a {
 	height: auto;
 }
 
-.hand {
-	cursor: pointer;
-}
+.hand { cursor: pointer; }
 
-.say {
-	margin-left: 5px;
-}
-
-.space {
-	margin-right: clamp(30px, 12vw, 150px);
-}
+::selection { background: var(--cempasuchil); color: var(--obsidiana); }
 
 @media (max-width: 768px) {
-	#main {
-		padding: 10px;
-	}
-
-	#wrap {
-		width: 96vw;
-		margin-top: 8px;
-	}
-
-	#text {
-		width: 50%;
-		left: 12px;
-		top: 12px;
-	}
-
-	#clock-box {
-		left: 12px;
-		bottom: 8px;
-	}
+	body::before { inset: 10px; }
+	body::after { right: -1.4rem; bottom: 5vh; width: 4rem; height: 4rem; }
+	#main { padding: 24px 10px 18px; }
+	#wrap { width: 96vw; margin-top: 6px; }
+	#text { top: 12px; left: 12px; width: 50%; }
+	#code { padding: 12px 14px; font-size: 15px; }
+	#code::before { margin-bottom: 7px; font-size: 19px; }
+	#clock-box { bottom: 8px; left: 12px; max-width: 50%; padding: 7px 10px 8px; font-size: 14px; }
+	#clock-box::before { font-size: 15px; }
+	#clock-box a { font-size: 18px; }
+	#clock .digit { font-size: 18px; }
 }
 
 @media (max-width: 480px) {
-	#text {
-		width: 58%;
-	}
+	#text { width: 58%; }
+	#code { padding: 10px 11px; font-size: 13px; }
+	#code::before { font-size: 17px; }
+	#clock-box { max-width: 58%; font-size: 12px; }
+	#clock-box::before { font-size: 14px; }
+	#clock-box a { font-size: 16px; }
+	#clock .digit { font-size: 16px; }
+}
 
-	#code {
-		font-size: 14px;
-	}
-
-	#clock-box {
-		font-size: 14px;
-	}
-
-	#clock-box a {
-		font-size: 15px;
-	}
-
-	#clock .digit {
-		font-size: 17px;
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: .01ms !important;
+		animation-iteration-count: 1 !important;
+		scroll-behavior: auto !important;
+		transition-duration: .01ms !important;
 	}
 }
