@@ -125,10 +125,12 @@
         var data = profile.data;
         var url = new URL("../", window.location.href);
         url.searchParams.set("v", "2");
+        var payload = {};
 
         function setIfDifferent(key, value, defaultValue) {
             if (String(value == null ? "" : value) !== String(defaultValue)) {
                 url.searchParams.set(key, value);
+                payload[key] = value;
             }
         }
 
@@ -144,7 +146,18 @@
             url.searchParams.set("a", profile.id);
             url.searchParams.set("preview", "1");
         }
-        return url;
+
+        if (!window.LZString || !Object.keys(payload).length) {
+            return url;
+        }
+
+        var packedUrl = new URL("../", window.location.href);
+        packedUrl.searchParams.set("p", window.LZString.compressToEncodedURIComponent(JSON.stringify(payload)));
+        if (preview) {
+            packedUrl.searchParams.set("a", profile.id);
+            packedUrl.searchParams.set("preview", "1");
+        }
+        return packedUrl.href.length < url.href.length ? packedUrl : url;
     }
 
     function currentSeasonLabel() {
@@ -267,7 +280,7 @@
 
         copied.then(function (success) {
             status.textContent = success
-                ? "Enlace copiado. Ya puedes pegarlo en WhatsApp."
+                ? "Enlace corto copiado (" + shareUrl.value.length + " caracteres). Ya puedes pegarlo en WhatsApp."
                 : "El enlace está listo. Mantén presionada la barra para copiarlo.";
             status.className = "status success";
         });

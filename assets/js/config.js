@@ -64,11 +64,27 @@
 
     var params = new URLSearchParams(window.location.search);
     var saved = readSettings();
-    var compactLink = params.get("v") === "2";
+    var packed = null;
+    try {
+        if (params.get("p") && window.LZString) {
+            packed = JSON.parse(window.LZString.decompressFromEncodedURIComponent(params.get("p")) || "null");
+        }
+    } catch (error) {
+        packed = null;
+    }
+
+    function paramValue(shortKey, longKey) {
+        if (packed && Object.prototype.hasOwnProperty.call(packed, shortKey)) {
+            return String(packed[shortKey]);
+        }
+        return params.get(shortKey) || params.get(longKey);
+    }
+
+    var compactLink = params.get("v") === "2" || !!packed;
     var source = compactLink ? DEFAULT_SETTINGS : saved;
-    var recipientName = clampText(params.get("n") || params.get("nombre"), 60) || clampText(source.recipient, 60);
-    var startDate = normalizeDate(params.get("d") || params.get("fecha")) || normalizeDate(source.startDate) || DEFAULT_START_DATE;
-    var yearsParam = params.get("b");
+    var recipientName = clampText(paramValue("n", "nombre"), 60) || clampText(source.recipient, 60);
+    var startDate = normalizeDate(paramValue("d", "fecha")) || normalizeDate(source.startDate) || DEFAULT_START_DATE;
+    var yearsParam = paramValue("b", "anios");
     if (yearsParam == null || yearsParam === "") {
         yearsParam = params.get("anios");
     }
@@ -78,7 +94,7 @@
     var branchBoost = yearsParam == null || yearsParam === ""
         ? clampBoost(source.branchBoost)
         : clampBoost(yearsParam);
-    var flowerIntensity = normalizeFlowerIntensity(params.get("i") || params.get("floracion") || source.flowerIntensity);
+    var flowerIntensity = normalizeFlowerIntensity(paramValue("i", "floracion") || source.flowerIntensity);
 
     window.APP_CONFIG = {
         storageKey: STORAGE_KEY,
@@ -92,10 +108,10 @@
         recipientName: recipientName,
         recipientDisplay: recipientName || DEFAULT_RECIPIENT_DISPLAY,
         message: {
-            line1: clampText(params.get("1") || params.get("m1"), 140) || clampText(source.line1, 140) || DEFAULT_SETTINGS.line1,
-            line2: clampText(params.get("2") || params.get("m2"), 140) || clampText(source.line2, 140) || DEFAULT_SETTINGS.line2,
-            line3: clampText(params.get("3") || params.get("m3"), 220) || clampText(source.line3, 220) || DEFAULT_SETTINGS.line3,
-            signature: clampText(params.get("s") || params.get("firma"), 140) || clampText(source.signature, 140) || DEFAULT_SETTINGS.signature
+            line1: clampText(paramValue("1", "m1"), 140) || clampText(source.line1, 140) || DEFAULT_SETTINGS.line1,
+            line2: clampText(paramValue("2", "m2"), 140) || clampText(source.line2, 140) || DEFAULT_SETTINGS.line2,
+            line3: clampText(paramValue("3", "m3"), 220) || clampText(source.line3, 220) || DEFAULT_SETTINGS.line3,
+            signature: clampText(paramValue("s", "firma"), 140) || clampText(source.signature, 140) || DEFAULT_SETTINGS.signature
         },
         branchBoost: branchBoost,
         treeId: clampText(params.get("a") || params.get("arbol"), 80),
