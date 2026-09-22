@@ -404,8 +404,8 @@ body::after {
 		aspect-ratio: auto;
 		margin: 0 auto;
 		overflow: hidden;
-		background-position: 68% calc(100% - var(--clock-clearance)) !important;
-		background-size: 205vw auto !important;
+		background-position: 67% calc(100% - var(--clock-clearance)) !important;
+		background-size: 220vw auto !important;
 		filter: drop-shadow(0 14px 22px rgba(0, 0, 0, .24));
 	}
 	#wrap::before { inset: 0; }
@@ -417,14 +417,14 @@ body::after {
 		right: auto;
 		bottom: var(--clock-clearance);
 		left: 50%;
-		width: 205vw;
+		width: 220vw;
 		height: auto;
 		max-width: none;
 		transform: translateX(-59%);
 	}
 	.growth-lens {
-		background-position: 68% calc(100% - var(--clock-clearance));
-		background-size: 205vw auto;
+		background-position: 67% calc(100% - var(--clock-clearance));
+		background-size: 220vw auto;
 	}
 	#text { top: 12px; left: 12px; width: calc(100% - 24px); }
 	#code { max-width: 420px; padding: 12px 14px; font-size: 16px; line-height: 1.34; }
