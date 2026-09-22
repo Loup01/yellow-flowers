@@ -398,8 +398,8 @@ body::after {
 		aspect-ratio: auto;
 		margin: 0 auto;
 		overflow: hidden;
-		background-position: center !important;
-		background-size: auto 100% !important;
+		background-position: 70% bottom !important;
+		background-size: 180vw auto !important;
 		filter: drop-shadow(0 14px 22px rgba(0, 0, 0, .24));
 	}
 	#wrap::before { inset: 0; }
@@ -407,18 +407,18 @@ body::after {
 	#ground-layer,
 	#branch-layer {
 		position: absolute;
-		top: 0;
+		top: auto;
 		right: auto;
-		bottom: auto;
+		bottom: 0;
 		left: 50%;
-		width: auto;
-		height: 100%;
+		width: 180vw;
+		height: auto;
 		max-width: none;
-		transform: translateX(-50%);
+		transform: translateX(-59%);
 	}
 	.growth-lens {
-		background-position: center;
-		background-size: auto 100%;
+		background-position: 70% bottom;
+		background-size: 180vw auto;
 	}
 	#text { top: 12px; left: 12px; width: calc(100% - 24px); }
 	#code { max-width: 390px; padding: 11px 13px; font-size: 14px; line-height: 1.27; }
