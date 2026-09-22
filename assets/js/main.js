@@ -133,6 +133,12 @@
 
     var opts = structuredClone(config.tree);
     opts.images = config.flowerImages;
+    var bloomFactors = { suave: .72, equilibrada: 1, abundante: 1.18 };
+    var bloomFactor = bloomFactors[config.flowerIntensity] || 1;
+    if (isNarrowScreen) {
+        bloomFactor *= .78;
+    }
+    opts.bloom.num = Math.max(360, Math.round(opts.bloom.num * bloomFactor));
     var branchCount = FlowGrowth.total(config.startDate, config.branchBoost);
     var boostCount = FlowGrowth.clampBoost(config.branchBoost);
     opts.branch = opts.branch.concat(FlowGrowth.specs(branchCount));
@@ -426,7 +432,12 @@
             return;
         }
 
-        var placements = [[-5, 1, 20], [6, -4, 17]];
+        var placementSets = {
+            suave: [[0, 0, 19]],
+            equilibrada: [[-5, 1, 20], [6, -4, 17]],
+            abundante: [[-7, 2, 20], [7, -3, 18], [0, -10, 16]]
+        };
+        var placements = placementSets[config.flowerIntensity] || placementSets.equilibrada;
         var seed = Math.abs(Math.round(spec[4] + spec[5]));
         var flowers = [];
 

@@ -9,7 +9,8 @@
         line1: "Flores amarillas para ti,",
         line2: "Nuestro amor siempre florecerá.",
         line3: "Y mientras sigamos juntos, este árbol seguirá creciendo.",
-        signature: "— Siempre contigo, siempre nosotros."
+        signature: "— Siempre contigo, siempre nosotros.",
+        flowerIntensity: "equilibrada"
     };
 
     function readSettings() {
@@ -54,6 +55,13 @@
         return Math.min(parsed, MAX_BOOST);
     }
 
+    function normalizeFlowerIntensity(value) {
+        var intensity = String(value || "").trim().toLowerCase();
+        return ["suave", "equilibrada", "abundante"].indexOf(intensity) >= 0
+            ? intensity
+            : "equilibrada";
+    }
+
     var params = new URLSearchParams(window.location.search);
     var saved = readSettings();
     var recipientName = clampText(params.get("nombre"), 60) || clampText(saved.recipient, 60);
@@ -65,6 +73,7 @@
     var branchBoost = yearsParam == null || yearsParam === ""
         ? clampBoost(saved.branchBoost)
         : clampBoost(yearsParam);
+    var flowerIntensity = normalizeFlowerIntensity(params.get("floracion") || saved.flowerIntensity);
 
     window.APP_CONFIG = {
         storageKey: STORAGE_KEY,
@@ -84,6 +93,7 @@
             signature: clampText(params.get("firma"), 140) || clampText(saved.signature, 140) || DEFAULT_SETTINGS.signature
         },
         branchBoost: branchBoost,
+        flowerIntensity: flowerIntensity,
         clock: {
             offsetHours: 0
         },

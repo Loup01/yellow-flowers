@@ -14,7 +14,7 @@ Y entra a `http://localhost:8000`.
 
 ## Personalización
 
-También puedes abrir [`/edicion/`](./edicion/) para cambiar el nombre, el mensaje y la fecha del temporizador desde una pestaña separada, con una vista previa que se actualiza mientras escribes. Los cambios se guardan en el navegador y se sincronizan al recargar el árbol. Desde ahí puedes crear enlaces independientes para compartir otro árbol.
+También puedes abrir [`/edicion/`](./edicion/) para cambiar el nombre, el mensaje, la fecha del temporizador y la intensidad de floración desde una pestaña separada, con una vista previa que se actualiza mientras escribes. Desde ahí también puedes deshacer años simulados y crear enlaces independientes para compartir otro árbol.
 
 Puedes cambiar el nombre y la fecha directamente en la URL, sin tocar el código:
 

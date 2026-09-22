@@ -111,6 +111,7 @@ label > span {
 }
 
 input,
+select,
 textarea {
     width: 100%;
     border: 1px solid rgba(143, 36, 49, .28);
@@ -125,6 +126,7 @@ textarea {
 textarea { resize: vertical; }
 
 input:focus-visible,
+select:focus-visible,
 textarea:focus-visible,
 button:focus-visible,
 .secondary:focus-visible,

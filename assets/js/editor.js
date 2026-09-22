@@ -7,6 +7,7 @@
         line2: "Nuestro amor siempre florecerá.",
         line3: "Y mientras sigamos juntos, este árbol seguirá creciendo.",
         signature: "— Siempre contigo, siempre nosotros.",
+        flowerIntensity: "equilibrada",
         branchBoost: 0
     };
 
@@ -15,6 +16,7 @@
     var shareButton = document.getElementById("share-button");
     var shareOutput = document.getElementById("share-output");
     var shareUrl = document.getElementById("share-url");
+    var undoYear = document.getElementById("undo-year");
     var previewFrame = document.getElementById("preview-frame");
     var previewSeason = document.getElementById("preview-season");
     var previewTimer = null;
@@ -46,6 +48,7 @@
         url.searchParams.set("m3", data.line3);
         url.searchParams.set("firma", data.signature);
         url.searchParams.set("anios", String(data.branchBoost || 0));
+        url.searchParams.set("floracion", data.flowerIntensity || "equilibrada");
         if (preview) {
             url.searchParams.set("preview", "1");
         }
@@ -122,6 +125,23 @@
             status.textContent = "Enlace creado. Selecciónalo y cópialo para compartirlo.";
             status.className = "status success";
         }
+    });
+
+    undoYear.addEventListener("click", function () {
+        var next = Object.assign({}, readSettings(), collectFormData());
+        var currentYears = Math.max(0, parseInt(next.branchBoost, 10) || 0);
+
+        if (currentYears === 0) {
+            status.textContent = "No hay años simulados que deshacer.";
+            status.className = "status error";
+            return;
+        }
+
+        next.branchBoost = currentYears - 1;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        status.textContent = "Se deshizo el último año simulado. Quedan " + next.branchBoost + ".";
+        status.className = "status success";
+        updatePreview();
     });
 
     populate();
