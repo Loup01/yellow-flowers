@@ -489,7 +489,7 @@
         
         this.imgIndex = random(0, Math.max(this.tree.images.length - 1, 0));
 
-        this.alpha = alpha || randomFloat(0.5, 1);
+        this.alpha = alpha || randomFloat(0.78, 1);
         this.angle = angle || random(0, 360);
         this.scale = scale || 0.1;
         this.place = place;
