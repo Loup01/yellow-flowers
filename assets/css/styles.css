@@ -382,45 +382,80 @@ body::after {
 ::selection { background: var(--cempasuchil); color: var(--obsidiana); }
 
 @media (max-width: 768px) {
-	body { min-height: 100svh; overflow: hidden; }
+	html,
+	body { width: 100%; min-height: 100svh; overflow: hidden; }
 	body::before { inset: 10px; }
 	body::after { right: -1.4rem; bottom: 5vh; width: 4rem; height: 4rem; }
 	#main {
-		display: grid;
+		display: block;
+		height: 100svh;
 		min-height: 100svh;
-		place-items: center;
-		padding: max(14px, env(safe-area-inset-top)) 8px max(14px, env(safe-area-inset-bottom));
+		padding: max(8px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
 	}
 	#wrap {
-		width: min(98vw, calc((100svh - 36px) * 1.6176));
+		width: 100%;
+		height: 100%;
+		aspect-ratio: auto;
 		margin: 0 auto;
+		overflow: hidden;
+		background-position: center !important;
+		background-size: auto 100% !important;
 		filter: drop-shadow(0 14px 22px rgba(0, 0, 0, .24));
 	}
-	#text { top: 12px; left: 12px; width: 50%; }
-	#code { padding: 12px 14px; font-size: 15px; }
-	#code::before { margin-bottom: 7px; font-size: 19px; }
-	#clock-box { bottom: 8px; left: 12px; max-width: 50%; padding: 7px 10px 8px; font-size: 14px; }
+	#wrap::before { inset: 0; }
+	#canvas,
+	#ground-layer,
+	#branch-layer {
+		position: absolute;
+		top: 0;
+		right: auto;
+		bottom: auto;
+		left: 50%;
+		width: auto;
+		height: 100%;
+		max-width: none;
+		transform: translateX(-50%);
+	}
+	.growth-lens {
+		background-position: center;
+		background-size: auto 100%;
+	}
+	#text { top: 12px; left: 12px; width: calc(100% - 24px); }
+	#code { max-width: 390px; padding: 11px 13px; font-size: 14px; line-height: 1.27; }
+	#code::before { margin-bottom: 6px; font-size: 18px; }
+	#clock-box { right: 12px; bottom: 10px; left: 12px; max-width: none; padding: 8px 11px 9px; font-size: 14px; }
 	#clock-box::before { font-size: 15px; }
 	#clock-box a { font-size: 18px; }
 	#clock .digit { font-size: 18px; }
 	.branch-touch { font-size: 12px; }
-	.opening-invitation { top: 69%; min-width: 160px; min-height: 62px; padding: 7px 15px 8px; }
+	.opening-invitation { top: 52%; min-width: 180px; min-height: 68px; padding: 8px 17px 9px; }
 	.growth-lens.is-visible { clip-path: circle(clamp(48px, 15vw, 72px) at var(--lens-x) var(--lens-y)); }
 	.growth-lens-ring { width: clamp(96px, 30vw, 144px); }
 }
 
 @media (max-width: 480px) {
-	#text { width: 58%; }
-	#code { padding: 10px 11px; font-size: 13px; }
+	#code { padding: 10px 11px; font-size: clamp(12px, 3.65vw, 14px); }
 	#code::before { font-size: 17px; }
-	#clock-box { max-width: 58%; font-size: 12px; }
+	#clock-box { font-size: 12px; }
 	#clock-box::before { font-size: 14px; }
 	#clock-box a { font-size: 16px; }
 	#clock .digit { font-size: 16px; }
 	#main { padding-right: 4px; padding-left: 4px; }
-	#text { width: 63%; }
-	#code { font-size: 12px; }
-	#clock-box { max-width: 63%; }
+}
+
+@media (max-width: 900px) and (max-height: 600px) and (orientation: landscape) {
+	html,
+	body,
+	#main { min-height: 100svh; height: 100svh; overflow: hidden; }
+	#main { padding: 4px max(8px, env(safe-area-inset-right)) 4px max(8px, env(safe-area-inset-left)); }
+	#wrap { width: 100%; height: 100%; margin: 0; overflow: hidden; aspect-ratio: auto; background-size: auto 100% !important; }
+	#canvas,
+	#ground-layer,
+	#branch-layer { position: absolute; top: 0; right: auto; bottom: auto; left: 50%; width: auto; height: 100%; transform: translateX(-50%); }
+	#text { top: 8px; left: 8px; width: 46%; }
+	#code { padding: 8px 10px; font-size: 12px; line-height: 1.2; }
+	#clock-box { right: auto; bottom: 8px; left: 8px; max-width: 46%; padding: 6px 9px; }
+	.opening-invitation { top: 50%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

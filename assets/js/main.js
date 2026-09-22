@@ -357,6 +357,17 @@
         ];
     }
 
+    function canvasPointToWrap(x, y) {
+        var sourceRect = branchLayer.getBoundingClientRect();
+        var wrapRect = wrap.getBoundingClientRect();
+        return {
+            left: sourceRect.left - wrapRect.left + x / width * sourceRect.width,
+            top: sourceRect.top - wrapRect.top + y / height * sourceRect.height,
+            leftPercent: (sourceRect.left - wrapRect.left + x / width * sourceRect.width) / wrapRect.width * 100,
+            topPercent: (sourceRect.top - wrapRect.top + y / height * sourceRect.height) / wrapRect.height * 100
+        };
+    }
+
     async function growTwigOnLayer(spec) {
         if (!branchLayer || !layerCtx) {
             return;
@@ -395,8 +406,9 @@
     function showGrowthLens(spec) {
         var centerX = (spec[0] + spec[4]) / 2;
         var centerY = (spec[1] + spec[5]) / 2;
-        var left = centerX / width * 100;
-        var top = centerY / height * 100;
+        var point = canvasPointToWrap(centerX, centerY);
+        var left = point.leftPercent;
+        var top = point.topPercent;
 
         if (growthLens) {
             growthLens.style.setProperty("--lens-x", left + "%");
@@ -551,10 +563,11 @@
         }
 
         var transformed = twigSpecOnScreen(spec);
+        var point = canvasPointToWrap(transformed[4], transformed[5]);
         var sounds = ["crac…", "fshhh…", "toc… crac…", "susss…"];
         sound.textContent = sounds[(yearsAdded - 1) % sounds.length] + "  +1 año de historia";
-        sound.style.left = (transformed[4] / width * 100) + "%";
-        sound.style.top = (transformed[5] / height * 100) + "%";
+        sound.style.left = point.leftPercent + "%";
+        sound.style.top = point.topPercent + "%";
         sound.classList.remove("is-visible");
         void sound.offsetWidth;
         sound.classList.add("is-visible");
