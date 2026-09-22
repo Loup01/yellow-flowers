@@ -2,6 +2,7 @@
     var DEFAULT_START_DATE = "2025-06-04T00:00";
     var DEFAULT_RECIPIENT_DISPLAY = "el amor de mi vida";
     var STORAGE_KEY = "yellowFlowers.settings.v1";
+    var MAX_BOOST = (window.FlowGrowth && window.FlowGrowth.MAX_BOOST) || 200;
     var DEFAULT_SETTINGS = {
         recipient: DEFAULT_RECIPIENT_DISPLAY,
         startDate: DEFAULT_START_DATE,
@@ -20,13 +21,47 @@
         }
     }
 
+    function clampText(value, max) {
+        if (value == null) {
+            return "";
+        }
+        return String(value).trim().slice(0, max);
+    }
+
+    function normalizeDate(value) {
+        var text = String(value || "").trim();
+
+        if (!text) {
+            return "";
+        }
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+            text += "T00:00";
+        }
+
+        return isNaN(new Date(text).getTime()) ? "" : text;
+    }
+
+    function clampBoost(value) {
+        if (window.FlowGrowth) {
+            return window.FlowGrowth.clampBoost(value);
+        }
+
+        var parsed = parseInt(value, 10);
+        if (!isFinite(parsed) || parsed < 0) {
+            parsed = 0;
+        }
+        return Math.min(parsed, MAX_BOOST);
+    }
+
     var params = new URLSearchParams(window.location.search);
     var saved = readSettings();
-    var recipientName = (params.get("nombre") || saved.recipient || "").trim();
-    var startDateParam = (params.get("fecha") || "").trim();
-    var startDate = startDateParam && !isNaN(new Date(startDateParam).getTime())
-        ? startDateParam
-        : saved.startDate || DEFAULT_START_DATE;
+    var recipientName = clampText(params.get("nombre"), 60) || clampText(saved.recipient, 60);
+    var startDate = normalizeDate(params.get("fecha")) || normalizeDate(saved.startDate) || DEFAULT_START_DATE;
+    var ramasParam = params.get("ramas");
+    var branchBoost = ramasParam == null || ramasParam === ""
+        ? clampBoost(saved.branchBoost)
+        : clampBoost(ramasParam);
 
     window.APP_CONFIG = {
         storageKey: STORAGE_KEY,
@@ -40,12 +75,12 @@
         recipientName: recipientName,
         recipientDisplay: recipientName || DEFAULT_RECIPIENT_DISPLAY,
         message: {
-            line1: params.get("m1") || saved.line1,
-            line2: params.get("m2") || saved.line2,
-            line3: params.get("m3") || saved.line3,
-            signature: params.get("firma") || saved.signature
+            line1: clampText(params.get("m1"), 140) || clampText(saved.line1, 140) || DEFAULT_SETTINGS.line1,
+            line2: clampText(params.get("m2"), 140) || clampText(saved.line2, 140) || DEFAULT_SETTINGS.line2,
+            line3: clampText(params.get("m3"), 220) || clampText(saved.line3, 220) || DEFAULT_SETTINGS.line3,
+            signature: clampText(params.get("firma"), 140) || clampText(saved.signature, 140) || DEFAULT_SETTINGS.signature
         },
-        branchBoost: Math.max(0, parseInt(params.get("ramas") || "0", 10) || 0),
+        branchBoost: branchBoost,
         clock: {
             offsetHours: 0
         },
