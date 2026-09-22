@@ -27,7 +27,7 @@
                     <span id="message-line-2" class="say"></span><br><br>
                     <span id="message-line-3" class="say"></span><br><br>
                     <span id="message-signature" class="say"></span>
-                    <button id="branch-touch" class="branch-touch" type="button" hidden aria-label="Agregar una rama al árbol">(toca aquí)</button>
+                    <button id="branch-touch" class="branch-touch" type="button" hidden aria-label="Hacer crecer el árbol un año">(toca aquí)</button>
                 </div>
             </div>
             <div id="clock-box">
@@ -36,8 +36,10 @@
                 <div id="clock"></div>
             </div>
 
+            <canvas id="ground-layer" width="1100" height="680" aria-hidden="true"></canvas>
             <canvas id="canvas" width="1100" height="680"></canvas>
             <canvas id="branch-layer" width="1100" height="680" aria-hidden="true"></canvas>
+            <div id="growth-sound" class="growth-sound" role="status" aria-live="polite"></div>
         </div>
     </div>
 

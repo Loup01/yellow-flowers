@@ -58,10 +58,13 @@
     var saved = readSettings();
     var recipientName = clampText(params.get("nombre"), 60) || clampText(saved.recipient, 60);
     var startDate = normalizeDate(params.get("fecha")) || normalizeDate(saved.startDate) || DEFAULT_START_DATE;
-    var ramasParam = params.get("ramas");
-    var branchBoost = ramasParam == null || ramasParam === ""
+    var yearsParam = params.get("anios");
+    if (yearsParam == null || yearsParam === "") {
+        yearsParam = params.get("ramas");
+    }
+    var branchBoost = yearsParam == null || yearsParam === ""
         ? clampBoost(saved.branchBoost)
-        : clampBoost(ramasParam);
+        : clampBoost(yearsParam);
 
     window.APP_CONFIG = {
         storageKey: STORAGE_KEY,

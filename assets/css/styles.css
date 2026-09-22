@@ -140,8 +140,12 @@ body::after {
 }
 
 .branch-touch {
+	display: inline-flex;
+	min-height: 44px;
+	align-items: center;
 	border: 0;
-	padding: 0;
+	margin: -.45rem -.35rem;
+	padding: .45rem .35rem;
 	color: var(--granada);
 	background: transparent;
 	font: inherit;
@@ -151,11 +155,19 @@ body::after {
 	text-decoration-color: rgba(143, 36, 49, .45);
 	text-underline-offset: .18em;
 	cursor: pointer;
+	vertical-align: middle;
 }
+
+.branch-touch[hidden] { display: none; }
 
 .branch-touch:hover,
 .branch-touch:focus-visible {
 	color: var(--cempasuchil);
+}
+
+.branch-touch:disabled {
+	cursor: wait;
+	opacity: .48;
 }
 
 .space { margin-right: 0; }
@@ -171,7 +183,6 @@ body::after {
 	border: 1px solid rgba(245, 184, 46, .32);
 	border-radius: 2px;
 	background: rgba(23, 18, 15, .82);
-	box-shadow: 0 10px 24px rgba(0, 0, 0, .2);
 	color: var(--marfil);
 	font-size: clamp(16px, 2vw, 26px);
 	line-height: 1.05;
@@ -211,6 +222,16 @@ body::after {
 	height: auto;
 }
 
+#ground-layer {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
 #branch-layer {
 	position: absolute;
 	inset: 0;
@@ -219,6 +240,31 @@ body::after {
 	width: 100%;
 	height: 100%;
 	pointer-events: none;
+}
+
+.growth-sound {
+	position: absolute;
+	z-index: 5;
+	max-width: 9rem;
+	padding: .3rem .55rem;
+	transform: translate(-50%, -50%) translateY(.7rem) rotate(-3deg);
+	color: var(--granada);
+	background: rgba(255, 248, 233, .9);
+	font-family: var(--mano);
+	font-size: clamp(.85rem, 1.6vw, 1.15rem);
+	line-height: 1.05;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.growth-sound.is-visible {
+	animation: growth-sound 2.4s cubic-bezier(.2, .8, .2, 1) forwards;
+}
+
+@keyframes growth-sound {
+	0% { opacity: 0; transform: translate(-50%, -50%) translateY(.7rem) rotate(-3deg) scale(.9); }
+	18%, 66% { opacity: 1; transform: translate(-50%, -50%) translateY(-.25rem) rotate(-3deg) scale(1); }
+	100% { opacity: 0; transform: translate(-50%, -50%) translateY(-1.1rem) rotate(-3deg) scale(.98); }
 }
 
 .hand { cursor: pointer; }
@@ -262,4 +308,5 @@ body::after {
 		scroll-behavior: auto !important;
 		transition-duration: .01ms !important;
 	}
+	.growth-sound.is-visible { animation-duration: 1.2s !important; }
 }

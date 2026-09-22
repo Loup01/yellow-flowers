@@ -1,6 +1,7 @@
 (function () {
     var canvas = document.getElementById('canvas');
     var branchLayer = document.getElementById('branch-layer');
+    var groundLayer = document.getElementById('ground-layer');
     var config = window.APP_CONFIG;
     var FlowGrowth = window.FlowGrowth;
     var width = config.canvas.width;
@@ -68,8 +69,63 @@
         });
     }
 
+    function seasonFor(date) {
+        var month = date.getMonth();
+        if (month >= 2 && month <= 4) { return "spring"; }
+        if (month >= 5 && month <= 7) { return "summer"; }
+        if (month >= 8 && month <= 10) { return "autumn"; }
+        return "winter";
+    }
+
+    function seededRandom(seed) {
+        var value = Math.sin(seed * 999.91) * 43758.5453;
+        return value - Math.floor(value);
+    }
+
+    function drawSeasonalGround() {
+        if (!groundLayer || !groundLayer.getContext) {
+            return;
+        }
+
+        groundLayer.width = width;
+        groundLayer.height = height;
+        var context = groundLayer.getContext('2d');
+        var season = seasonFor(new Date());
+        var palettes = {
+            spring: ["#74875d", "#9aa76d", "#d2b45b", "#6a774f"],
+            summer: ["#40513b", "#607149", "#8b914f", "#c79a35"],
+            autumn: ["#6f6841", "#92804a", "#b87932", "#805136"],
+            winter: ["#7f8068", "#9a967b", "#6e735d", "#b9aa82"]
+        };
+        var colors = palettes[season];
+        var soil = context.createLinearGradient(0, 585, 0, height);
+        soil.addColorStop(0, "rgba(91, 65, 39, 0)");
+        soil.addColorStop(.35, "rgba(112, 82, 50, .12)");
+        soil.addColorStop(1, "rgba(82, 57, 35, .3)");
+        context.fillStyle = soil;
+        context.fillRect(0, 575, width, height - 575);
+
+        for (var index = 0; index < 310; index++) {
+            var x = seededRandom(index + 1) * width;
+            var baseY = 620 + seededRandom(index + 41) * 58;
+            var bladeHeight = 5 + seededRandom(index + 83) * (season === "summer" ? 24 : 17);
+            var lean = (seededRandom(index + 127) - .5) * 10;
+            context.beginPath();
+            context.moveTo(x, baseY);
+            context.quadraticCurveTo(x + lean * .35, baseY - bladeHeight * .55, x + lean, baseY - bladeHeight);
+            context.strokeStyle = colors[index % colors.length];
+            context.globalAlpha = .34 + seededRandom(index + 173) * .42;
+            context.lineWidth = .7 + seededRandom(index + 211) * 1.25;
+            context.lineCap = "round";
+            context.stroke();
+        }
+        context.globalAlpha = 1;
+        groundLayer.dataset.season = season;
+    }
+
     canvas.width = width;
     canvas.height = height;
+    drawSeasonalGround();
 
     var opts = structuredClone(config.tree);
     opts.images = config.flowerImages;
@@ -88,6 +144,9 @@
     var seed = tree.seed;
     var foot = tree.footer;
     var startInteraction = TreeInteractions.bindStartInteraction(canvas, seed);
+    if (new URLSearchParams(window.location.search).get("preview") === "1") {
+        startInteraction.start();
+    }
     var wrap = canvas.parentElement;
 
     var backdrop = document.createElement('canvas');
@@ -193,6 +252,9 @@
 
     function twigSpecOnScreen(spec) {
         var t = TREE_SCALE;
+        var children = Array.isArray(spec[8])
+            ? spec[8].map(twigSpecOnScreen)
+            : [];
 
         return [
             TREE_OFFSET_X + spec[0] * t,
@@ -202,7 +264,8 @@
             TREE_OFFSET_X + spec[4] * t,
             spec[5] * t,
             Math.min(4, Math.max(1.8, spec[6] * t * 1.25)),
-            Math.max(14, Math.round(spec[7] * t))
+            Math.max(14, Math.round(spec[7] * t)),
+            children
         ];
     }
 
@@ -247,6 +310,22 @@
         twigPumpRunning = false;
     }
 
+    function showGrowthSound(spec, yearsAdded) {
+        var sound = document.getElementById("growth-sound");
+        if (!sound) {
+            return;
+        }
+
+        var transformed = twigSpecOnScreen(spec);
+        var sounds = ["crac…", "fshhh…", "toc… crac…", "susss…"];
+        sound.textContent = sounds[(yearsAdded - 1) % sounds.length] + "  +1 año de historia";
+        sound.style.left = (transformed[4] / width * 100) + "%";
+        sound.style.top = (transformed[5] / height * 100) + "%";
+        sound.classList.remove("is-visible");
+        void sound.offsetWidth;
+        sound.classList.add("is-visible");
+    }
+
     function persistBranches() {
         try {
             var raw = JSON.parse(localStorage.getItem(config.storageKey) || "null") || {};
@@ -258,7 +337,8 @@
 
         try {
             var params = new URLSearchParams(window.location.search);
-            params.set("ramas", String(boostCount));
+            params.set("anios", String(boostCount));
+            params.delete("ramas");
             window.history.replaceState(null, "", window.location.pathname + "?" + params.toString() + window.location.hash);
         } catch (error) {
             return;
@@ -267,20 +347,27 @@
 
     var branchTouch = document.getElementById("branch-touch");
     if (branchTouch) {
-        branchTouch.addEventListener("click", function () {
+        branchTouch.addEventListener("click", async function () {
             if (!backdropReady) {
                 return;
             }
 
-            if (branchCount >= FlowGrowth.MAX_TOTAL) {
+            if (branchCount >= FlowGrowth.MAX_TOTAL || twigPumpRunning) {
                 return;
             }
 
-            twigQueue.push(FlowGrowth.specAt(branchCount));
-            branchCount += 1;
-            boostCount = FlowGrowth.clampBoost(boostCount + 1);
-            persistBranches();
-            pumpTwigs();
+            branchTouch.disabled = true;
+            try {
+                var nextSpec = FlowGrowth.specAt(branchCount);
+                twigQueue.push(nextSpec);
+                branchCount += 1;
+                boostCount = FlowGrowth.clampBoost(boostCount + 1);
+                persistBranches();
+                showGrowthSound(nextSpec, boostCount);
+                await pumpTwigs();
+            } finally {
+                branchTouch.disabled = false;
+            }
         });
     }
 
