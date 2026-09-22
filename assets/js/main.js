@@ -30,7 +30,7 @@
     }
 
     function wait(ms) {
-        return sleep(reducedMotion ? 1 : ms);
+        return sleep(reducedMotion ? 1 : (isNarrowScreen ? Math.max(1, Math.round(ms * .28)) : ms));
     }
 
     function fadeIn(element, duration) {
@@ -43,7 +43,7 @@
 
     function typeLine(element, text) {
         return new Promise(function (resolve) {
-            window.typewriter(element, text, { speed: 28, onDone: resolve });
+            window.typewriter(element, text, { speed: isNarrowScreen ? 11 : 28, onDone: resolve });
         });
     }
 
@@ -158,6 +158,17 @@
     var growthLens = document.getElementById("growth-lens");
     var growthLensRing = document.getElementById("growth-lens-ring");
 
+    function beginOpening() {
+        if (openingInvitation) {
+            openingInvitation.classList.add("is-starting");
+            openingInvitation.disabled = true;
+            var hint = openingInvitation.querySelector("small");
+            if (hint) {
+                hint.textContent = "Nuestro árbol está despertando…";
+            }
+        }
+    }
+
     function dismissOpening() {
         if (openingInvitation) {
             openingInvitation.classList.add("is-dismissed");
@@ -170,7 +181,7 @@
         openingName.textContent = config.recipientDisplay;
     }
 
-    var startInteraction = TreeInteractions.bindStartInteraction(canvas, seed, dismissOpening);
+    var startInteraction = TreeInteractions.bindStartInteraction(canvas, seed, beginOpening);
     if (openingInvitation) {
         openingInvitation.addEventListener("click", startInteraction.start);
     }
@@ -212,7 +223,10 @@
 
     async function growAnimate() {
         do {
-            tree.grow();
+            var growthBatch = isNarrowScreen ? 4 : 1;
+            for (var step = 0; step < growthBatch && tree.canGrow(); step++) {
+                tree.grow();
+            }
             await wait(10);
         } while (tree.canGrow());
         branchOnlyImage = tree.toDataURL('image/png');
@@ -220,7 +234,7 @@
 
     async function flowAnimate() {
         do {
-            tree.flower(2);
+            tree.flower(isNarrowScreen ? 8 : 2);
             await wait(10);
         } while (tree.canFlower());
     }
@@ -254,6 +268,8 @@
             var lensImage = await buildGrowthLensImage(branchOnlyImage);
             growthLens.style.backgroundImage = "url(" + lensImage + ")";
         }
+
+        dismissOpening();
     }
 
     function buildGrowthLensImage(source) {
@@ -361,9 +377,9 @@
         } while (twig.canGrow());
 
         updateGrowthLensBranches();
-        await wait(520);
+        await sleep(reducedMotion ? 1 : (isNarrowScreen ? 360 : 520));
         await flowerTwigTip(spec);
-        await wait(520);
+        await sleep(reducedMotion ? 1 : (isNarrowScreen ? 360 : 520));
         hideGrowthLens();
     }
 
@@ -583,8 +599,9 @@
                 branchCount += 1;
                 boostCount = FlowGrowth.clampBoost(boostCount + 1);
                 persistBranches();
-                showGrowthSound(nextSpec, boostCount);
                 await pumpTwigs();
+                await sleep(reducedMotion ? 1 : 260);
+                showGrowthSound(nextSpec, boostCount);
             } finally {
                 branchTouch.disabled = false;
                 branchTouch.textContent = branchTouchLabel;

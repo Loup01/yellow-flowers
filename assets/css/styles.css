@@ -158,6 +158,15 @@ body::after {
 	transform: translate(-50%, -44%) scale(.96);
 }
 
+.opening-invitation.is-starting {
+	cursor: wait;
+	pointer-events: none;
+}
+
+.opening-invitation.is-starting small {
+	color: var(--hoja);
+}
+
 #text {
 	position: absolute;
 	top: clamp(18px, 7vh, 76px);
@@ -373,10 +382,20 @@ body::after {
 ::selection { background: var(--cempasuchil); color: var(--obsidiana); }
 
 @media (max-width: 768px) {
+	body { min-height: 100svh; overflow: hidden; }
 	body::before { inset: 10px; }
 	body::after { right: -1.4rem; bottom: 5vh; width: 4rem; height: 4rem; }
-	#main { padding: 24px 10px 18px; }
-	#wrap { width: 96vw; margin-top: 6px; }
+	#main {
+		display: grid;
+		min-height: 100svh;
+		place-items: center;
+		padding: max(14px, env(safe-area-inset-top)) 8px max(14px, env(safe-area-inset-bottom));
+	}
+	#wrap {
+		width: min(98vw, calc((100svh - 36px) * 1.6176));
+		margin: 0 auto;
+		filter: drop-shadow(0 14px 22px rgba(0, 0, 0, .24));
+	}
 	#text { top: 12px; left: 12px; width: 50%; }
 	#code { padding: 12px 14px; font-size: 15px; }
 	#code::before { margin-bottom: 7px; font-size: 19px; }
@@ -398,8 +417,7 @@ body::after {
 	#clock-box::before { font-size: 14px; }
 	#clock-box a { font-size: 16px; }
 	#clock .digit { font-size: 16px; }
-	#main { padding-right: 6px; padding-left: 6px; }
-	#wrap { width: 98vw; }
+	#main { padding-right: 4px; padding-left: 4px; }
 	#text { width: 63%; }
 	#code { font-size: 12px; }
 	#clock-box { max-width: 63%; }
