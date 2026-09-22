@@ -127,13 +127,12 @@ body::after {
 }
 
 .opening-invitation strong {
-	max-width: 18ch;
+	max-width: 22ch;
 	overflow: hidden;
 	font-size: clamp(20px, 2.5vw, 31px);
 	font-weight: 500;
-	line-height: 1;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	line-height: 1.05;
+	text-align: center;
 }
 
 .opening-invitation small {

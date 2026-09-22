@@ -178,7 +178,7 @@
     }
 
     if (openingName) {
-        openingName.textContent = config.recipientDisplay;
+        openingName.textContent = config.recipientDisplay + ",";
     }
 
     var startInteraction = TreeInteractions.bindStartInteraction(canvas, seed, beginOpening);
