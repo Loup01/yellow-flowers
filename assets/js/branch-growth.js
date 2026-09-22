@@ -9,14 +9,14 @@
     // Al completar una vuelta, el siguiente brote continúa desde el extremo
     // del brote anterior de esa misma ruta: nunca nace suspendido en el aire.
     var TIP_PATHS = [
-        [500, 200, -20, -18, -1],
-        [394, 395, -22, -15, -1],
-        [661, 426, 18, -5, 1],
-        [534, 217, 0, -22, 1],
-        [371, 205, -12, -22, -1],
-        [395, 330, -21, 3, -1],
-        [648, 271, 18, -10, 1],
-        [678, 221, 20, -16, 1]
+        [500, 200, -30, -27, -1],
+        [394, 395, -34, -23, -1],
+        [661, 426, 28, -8, 1],
+        [534, 217, 0, -34, 1],
+        [371, 205, -19, -34, -1],
+        [395, 330, -32, 5, -1],
+        [648, 271, 28, -16, 1],
+        [678, 221, 31, -25, 1]
     ];
 
     function clampExtraYears(value) {
@@ -54,7 +54,7 @@
         var curve = path[4] * (4 + Math.min(generation, 4));
         var controlX = startX + path[2] * .52 - path[3] / 22 * curve;
         var controlY = startY + path[3] * .52 + path[2] / 22 * curve;
-        var radius = Math.max(1.15, 3.2 - generation * .22);
+        var radius = Math.max(1.2, 3.5 - generation * .22);
         var children = [];
 
         if ((normalized + 1) % 3 === 0) {
@@ -80,7 +80,7 @@
             endX,
             endY,
             radius,
-            34,
+            46,
             children
         ];
     }
