@@ -262,7 +262,7 @@ body::after {
 	display: block;
 	margin-bottom: 4px;
 	color: var(--cempasuchil);
-	content: "un amor que sigue floreciendo";
+	content: "una historia que sigue floreciendo";
 	font-family: var(--mano);
 	font-size: clamp(17px, 1.7vw, 23px);
 }
