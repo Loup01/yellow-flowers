@@ -5,17 +5,18 @@
     var MAX_EXTRA_YEARS = 80;
     var MAX_TOTAL = MAX_NATURAL_YEARS + MAX_EXTRA_YEARS;
 
-    // Puntos de crecimiento distribuidos por la copa. Cada tramo representa
-    // la extensión de una temporada anual desde una yema terminal existente.
-    var SHOOTS = [
-        [540, 285, 524, 265, 506, 248],
-        [548, 300, 567, 278, 587, 260],
-        [520, 325, 500, 309, 481, 294],
-        [570, 330, 594, 312, 617, 296],
-        [530, 265, 520, 244, 514, 222],
-        [558, 270, 573, 248, 589, 228],
-        [500, 360, 480, 350, 460, 337],
-        [590, 365, 612, 352, 635, 338]
+    // Cada ruta parte exactamente de una punta existente del árbol original.
+    // Al completar una vuelta, el siguiente brote continúa desde el extremo
+    // del brote anterior de esa misma ruta: nunca nace suspendido en el aire.
+    var TIP_PATHS = [
+        [500, 200, -20, -18, -1],
+        [394, 395, -22, -15, -1],
+        [661, 426, 18, -5, 1],
+        [534, 217, 0, -22, 1],
+        [371, 205, -12, -22, -1],
+        [395, 330, -21, 3, -1],
+        [648, 271, 18, -10, 1],
+        [678, 221, 20, -16, 1]
     ];
 
     function clampExtraYears(value) {
@@ -42,50 +43,46 @@
         return Math.min(naturalYears(startDate) + clampExtraYears(extraYears), MAX_TOTAL);
     }
 
-    function transformShoot(shoot, index) {
-        var cycle = Math.floor(index / SHOOTS.length);
-        var direction = index % 2 === 0 ? -1 : 1;
-        var drift = Math.min(cycle, 8) * 4 * direction;
-        var rise = Math.min(cycle, 8) * 2;
-        var radius = Math.max(1.35, 3.8 - cycle * .18);
-        var length = Math.max(24, 46 - cycle * 2);
-        var endX = shoot[4] + drift;
-        var endY = shoot[5] - rise;
+    function specAt(index) {
+        var normalized = Math.max(0, Math.floor(index) || 0);
+        var path = TIP_PATHS[normalized % TIP_PATHS.length];
+        var generation = Math.floor(normalized / TIP_PATHS.length);
+        var startX = path[0] + path[2] * generation;
+        var startY = path[1] + path[3] * generation;
+        var endX = startX + path[2];
+        var endY = startY + path[3];
+        var curve = path[4] * (4 + Math.min(generation, 4));
+        var controlX = startX + path[2] * .52 - path[3] / 22 * curve;
+        var controlY = startY + path[3] * .52 + path[2] / 22 * curve;
+        var radius = Math.max(1.15, 3.2 - generation * .22);
         var children = [];
 
-        // Cada tercer año aparece un brote lateral corto, como ocurre cuando
-        // una yema lateral toma fuerza tras el crecimiento terminal.
-        if ((index + 1) % 3 === 0) {
-            var side = index % 2 === 0 ? -1 : 1;
+        if ((normalized + 1) % 3 === 0) {
+            var side = path[4];
             children.push([
                 endX,
                 endY,
-                endX + 8 * side,
-                endY - 7,
-                endX + 15 * side,
-                endY - 11,
-                Math.max(1, radius * .62),
-                22,
+                endX + 7 * side,
+                endY - 6,
+                endX + 13 * side,
+                endY - 10,
+                Math.max(1, radius * .58),
+                20,
                 []
             ]);
         }
 
         return [
-            shoot[0] + drift * .35,
-            shoot[1] - rise * .3,
-            shoot[2] + drift * .7,
-            shoot[3] - rise * .65,
+            startX,
+            startY,
+            controlX,
+            controlY,
             endX,
             endY,
             radius,
-            length,
+            34,
             children
         ];
-    }
-
-    function specAt(index) {
-        var normalized = Math.max(0, Math.floor(index) || 0);
-        return transformShoot(SHOOTS[normalized % SHOOTS.length], normalized);
     }
 
     function specs(count) {
@@ -106,6 +103,7 @@
         clampExtraYears: clampExtraYears,
         MAX_TOTAL: MAX_TOTAL,
         MAX_BOOST: MAX_EXTRA_YEARS,
-        YEAR_DAYS: YEAR_DAYS
+        YEAR_DAYS: YEAR_DAYS,
+        TIP_COUNT: TIP_PATHS.length
     };
 })(window);

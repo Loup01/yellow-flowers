@@ -158,6 +158,11 @@
     var layerCtx = branchLayer && branchLayer.getContext ? branchLayer.getContext('2d') : null;
     var twigQueue = [];
     var twigPumpRunning = false;
+    var growthFlowerImages = config.flowerImages.map(function (source) {
+        var image = new Image();
+        image.src = source;
+        return image;
+    });
 
     async function seedAnimate() {
         seed.draw();
@@ -284,6 +289,50 @@
             twig.grow();
             await wait(16);
         } while (twig.canGrow());
+
+        await flowerTwigTip(spec);
+    }
+
+    function imageReady(image) {
+        if (image.complete) {
+            return Promise.resolve(image.naturalWidth > 0);
+        }
+
+        return new Promise(function (resolve) {
+            image.addEventListener("load", function () { resolve(true); }, { once: true });
+            image.addEventListener("error", function () { resolve(false); }, { once: true });
+        });
+    }
+
+    async function flowerTwigTip(spec) {
+        if (!layerCtx || !growthFlowerImages.length) {
+            return;
+        }
+
+        var placements = [[-5, 1, 20], [6, -4, 17]];
+        var seed = Math.abs(Math.round(spec[4] + spec[5]));
+
+        for (var index = 0; index < placements.length; index++) {
+            var image = growthFlowerImages[(seed + index * 3) % growthFlowerImages.length];
+            var ready = await imageReady(image);
+            if (!ready) {
+                continue;
+            }
+
+            var placement = placements[index];
+            var size = placement[2];
+            layerCtx.save();
+            layerCtx.globalAlpha = .96;
+            layerCtx.drawImage(
+                image,
+                spec[4] + placement[0] - size / 2,
+                spec[5] + placement[1] - size / 2,
+                size,
+                size
+            );
+            layerCtx.restore();
+            await wait(90);
+        }
     }
 
     async function bakeTwig() {
